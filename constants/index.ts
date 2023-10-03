@@ -71,3 +71,54 @@ export const BADGE_CRITERIA = {
     GOLD: 100000,
   },
 };
+// temp
+export const TopQuestions = [
+  {
+    _id: 1,
+    text: "Best practices for data fetching in a Next.js application with Server-Side Rendering (SSR)?",
+  },
+  {
+    _id: 2,
+    text: "Can I get the course for free?",
+  },
+  {
+    _id: 3,
+    text: "Redux Toolkit Not Updating State as Expected",
+  },
+  {
+    _id: 4,
+    text: "Async/Await Function Not Handling Errors Properly",
+  },
+  {
+    _id: 5,
+    text: "How do I use express as a custom server in NextJS?",
+  },
+];
+// temp
+export const PopularTags = [
+  {
+    _id: 1,
+    label: "NEXTJS",
+    count: 6,
+  },
+  {
+    _id: 2,
+    label: "TEST",
+    count: 3,
+  },
+  {
+    _id: 3,
+    label: "REACT",
+    count: 3,
+  },
+  {
+    _id: 4,
+    label: "NEXT JS",
+    count: 3,
+  },
+  {
+    _id: 5,
+    label: "CSS",
+    count: 3,
+  },
+];
