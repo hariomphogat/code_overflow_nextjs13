@@ -28,33 +28,31 @@ const LeftSidebar = () => {
                 pathname === item.route;
 
               return (
-                <>
-                  <Link
-                    key={item.route}
-                    href={item.route}
-                    className={`${
-                      isActive
-                        ? "primary-gradient rounded-lg text-light-900"
-                        : "text-dark300_light900"
-                    } flex items-center justify-start gap-4 bg-transparent p-4 
+                <Link
+                  key={item.route}
+                  href={item.route}
+                  className={`${
+                    isActive
+                      ? "primary-gradient rounded-lg text-light-900"
+                      : "text-dark300_light900"
+                  } flex items-center justify-start gap-4 bg-transparent p-4 
                 `}
+                >
+                  <Image
+                    src={item.imgURL}
+                    alt={item.label}
+                    height={20}
+                    width={20}
+                    className={`${isActive ? "" : "invert-colors"}`}
+                  />
+                  <p
+                    className={`${
+                      isActive ? "base-bold" : "base-medium"
+                    } max-lg:hidden`}
                   >
-                    <Image
-                      src={item.imgURL}
-                      alt={item.label}
-                      height={20}
-                      width={20}
-                      className={`${isActive ? "" : "invert-colors"}`}
-                    />
-                    <p
-                      className={`${
-                        isActive ? "base-bold" : "base-medium"
-                      } max-lg:hidden`}
-                    >
-                      {item.label}
-                    </p>
-                  </Link>
-                </>
+                    {item.label}
+                  </p>
+                </Link>
               );
             })}
           </SignedIn>
@@ -67,34 +65,32 @@ const LeftSidebar = () => {
                 pathname === item.route;
 
               return (
-                <>
-                  <Link
-                    key={item.route}
-                    href={item.route}
+                <Link
+                  key={item.route}
+                  href={item.route}
+                  className={`${
+                    isActive
+                      ? "primary-gradient rounded-lg text-light-900"
+                      : "text-dark300_light900"
+                  } flex items-center justify-start gap-4 bg-transparent p-4 ${
+                    item.label === "Profile" && "hidden"
+                  }`}
+                >
+                  <Image
+                    src={item.imgURL}
+                    alt={item.label}
+                    height={20}
+                    width={20}
+                    className={`${isActive ? "" : "invert-colors"}`}
+                  />
+                  <p
                     className={`${
-                      isActive
-                        ? "primary-gradient rounded-lg text-light-900"
-                        : "text-dark300_light900"
-                    } flex items-center justify-start gap-4 bg-transparent p-4 ${
-                      item.label === "Profile" && "hidden"
-                    }`}
+                      isActive ? "base-bold" : "base-medium"
+                    } max-lg:hidden`}
                   >
-                    <Image
-                      src={item.imgURL}
-                      alt={item.label}
-                      height={20}
-                      width={20}
-                      className={`${isActive ? "" : "invert-colors"}`}
-                    />
-                    <p
-                      className={`${
-                        isActive ? "base-bold" : "base-medium"
-                      } max-lg:hidden`}
-                    >
-                      {item.label}
-                    </p>
-                  </Link>
-                </>
+                    {item.label}
+                  </p>
+                </Link>
               );
             })}
           </SignedOut>

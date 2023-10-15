@@ -97,27 +97,27 @@ export const TopQuestions = [
 // temp
 export const PopularTags = [
   {
-    _id: 1,
+    _id: "1",
     label: "NEXTJS",
     count: 6,
   },
   {
-    _id: 2,
+    _id: "2",
     label: "TEST",
     count: 3,
   },
   {
-    _id: 3,
+    _id: "3",
     label: "REACT",
     count: 3,
   },
   {
-    _id: 4,
+    _id: "4",
     label: "NEXT JS",
     count: 3,
   },
   {
-    _id: 5,
+    _id: "5",
     label: "CSS",
     count: 3,
   },
