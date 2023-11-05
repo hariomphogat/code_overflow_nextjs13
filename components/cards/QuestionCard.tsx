@@ -1,4 +1,3 @@
-"use client";
 import Link from "next/link";
 import RenderTag from "../shared/RenderTag";
 import Metric from "../shared/Metric";
@@ -13,7 +12,7 @@ interface QuestionProps {
     name: string;
     picture: string;
   };
-  upvotes: number;
+  upvotes: Array<object>;
   views: number;
   answers: Array<object>;
   createdAt: Date;
@@ -24,12 +23,13 @@ const QuestionCard = ({
   title,
   tags,
   author,
-  upvotes,
+  upvotes = [],
   views,
   answers,
   createdAt,
 }: QuestionProps) => {
   const postTime = getTimeStamp(createdAt);
+
   return (
     <div className="card-wrapper rounded-[10px] p-9 sm:px-11">
       <div className="flex flex-col-reverse items-start justify-between gap-5 sm:flex-row">
@@ -37,7 +37,7 @@ const QuestionCard = ({
           <span className="subtle-regular text-dark400_light700 line-clamp-1 flex sm:hidden">
             {postTime}
           </span>
-          <Link href={`/question/${_id}`}>
+          <Link href={`/question/${_id.toString()}`}>
             <h3 className="text-dark200_light900 sm:h3-semibold base-semibold line-clamp-1 flex-1">
               {title}
             </h3>
@@ -57,7 +57,7 @@ const QuestionCard = ({
             alt="User"
             value={author.name}
             title={`• asked ${postTime}`}
-            href={`/profile/${author._id}`}
+            href={`/profile/${author._id.toString()}`}
             isAuthor
             textStyles="body-medium text-dark400_light700"
           />
@@ -66,7 +66,7 @@ const QuestionCard = ({
           <Metric
             imgUrl="/assets/icons/like.svg"
             alt="Upvotes"
-            value={formatNumber(upvotes)}
+            value={formatNumber(upvotes?.length)}
             title="Votes"
             textStyles="small-medium text-dark400_light800"
           />

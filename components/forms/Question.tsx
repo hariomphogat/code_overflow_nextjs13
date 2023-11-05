@@ -19,13 +19,18 @@ import { QuestionSchema } from "@/lib/validations";
 import { Badge } from "../ui/badge";
 import Image from "next/image";
 import { createQuestion } from "@/lib/actions/question.action";
+import { usePathname, useRouter } from "next/navigation";
 
 const type: any = "create";
+interface Props {
+  mongoUserId: string;
+}
 
-const Question = () => {
+const Question = ({ mongoUserId }: Props) => {
   const editorRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const router = useRouter();
+  const pathname = usePathname();
   //  new Tag handler
   const handleInputKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
@@ -74,9 +79,16 @@ const Question = () => {
     setIsSubmitting(true);
     try {
       // make an async call to your api -> create a question
-      await createQuestion({});
-      // contain all form data
+      await createQuestion({
+        title: values.title,
+        content: values.explanation,
+        tags: values.tags,
+        author: JSON.parse(mongoUserId),
+        path: pathname,
+      });
+
       // navigate to homePage
+      router.push("/");
     } catch (error: any) {
       throw new Error(`error during submission:${error}`);
     } finally {

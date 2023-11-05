@@ -26,6 +26,7 @@ const NavContent = () => {
         return (
           <SheetClose asChild key={item.route}>
             <Link
+              key={item.route}
               href={item.route}
               className={`${
                 isActive
@@ -34,13 +35,17 @@ const NavContent = () => {
               } flex items-center justify-start gap-4 bg-transparent p-4`}
             >
               <Image
+                key={item.imgURL}
                 src={item.imgURL}
                 alt={item.label}
                 height={20}
                 width={20}
                 className={`${isActive ? "" : "invert-colors"}`}
               />
-              <p className={`${isActive ? "base-bold" : "base-medium"}`}>
+              <p
+                key={item.label}
+                className={`${isActive ? "base-bold" : "base-medium"}`}
+              >
                 {item.label}
               </p>
             </Link>

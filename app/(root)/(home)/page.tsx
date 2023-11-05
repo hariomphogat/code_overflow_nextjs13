@@ -6,43 +6,10 @@ import { HomePageFilters } from "@/constants/filters";
 import Link from "next/link";
 import QuestionCard from "@/components/cards/QuestionCard";
 import NoResult from "@/components/shared/NoResult";
+import { getQuestions } from "@/lib/actions/question.action";
 
-const questions: any = [
-  {
-    id: 1,
-    title:
-      "Best practices for data fetching in a Next.js application with Server-Side Rendering (SSR)?",
-    tags: [{ id: 1, name: "Next.js" }],
-    author: {
-      _id: 1,
-      name: "Hariom Phogat",
-      picture: "",
-    },
-    upvotes: 1234500,
-    views: 70904567,
-    answers: [],
-    createdAt: new Date("2023-10-01T12:00:00.000Z"),
-  },
-  {
-    id: 2,
-    title: "How to center a div?",
-    tags: [
-      { id: 1, name: "CSS" },
-      { id: 2, name: "Tailwind CSS" },
-    ],
-    author: {
-      _id: 2,
-      name: "Yashwant Phogat",
-      picture: "",
-    },
-    upvotes: 999,
-    views: 23152356,
-    answers: [],
-    createdAt: new Date("2023-10-01T12:00:00.000Z"),
-  },
-];
-
-export default function Home() {
+export default async function Home() {
+  const result = await getQuestions({});
   return (
     <>
       <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
@@ -69,11 +36,11 @@ export default function Home() {
       </div>
       <HomeFilters />
       <div className="mt-10 flex w-full flex-col gap-6">
-        {questions.length > 0 ? (
-          questions.map((question: any) => (
+        {result?.questions?.length > 0 ? (
+          result.questions.map((question: any) => (
             <QuestionCard
-              key={question.id}
-              _id={question.id}
+              key={question._id}
+              _id={question._id}
               title={question.title}
               tags={question.tags}
               author={question.author}
