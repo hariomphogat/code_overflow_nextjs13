@@ -1,9 +1,11 @@
+/* prettier-ignore */
 import { authMiddleware } from "@clerk/nextjs";
 
 export default authMiddleware({
   publicRoutes: [
     "/",
-    "/api/webhook",
+    /* prettier-ignore */
+    '/api/webhook',
     "question/:id",
     "/tags",
     "/tags/:id",
