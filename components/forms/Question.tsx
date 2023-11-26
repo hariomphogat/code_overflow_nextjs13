@@ -31,6 +31,7 @@ const Question = ({ mongoUserId }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+
   //  new Tag handler
   const handleInputKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
@@ -83,7 +84,7 @@ const Question = ({ mongoUserId }: Props) => {
         title: values.title,
         content: values.explanation,
         tags: values.tags,
-        author: JSON.parse(mongoUserId),
+        author: JSON.parse(JSON.stringify(mongoUserId)),
         path: pathname,
       });
 
