@@ -1,6 +1,7 @@
 import Answer from "@/components/forms/Answer";
 import AllAnswers from "@/components/shared/AllAnswers";
 import Metric from "@/components/shared/Metric";
+import NoResult from "@/components/shared/NoResult";
 import ParseHTML from "@/components/shared/ParseHTML";
 import RenderTag from "@/components/shared/RenderTag";
 import Votes from "@/components/shared/Votes";
@@ -8,10 +9,21 @@ import { getQuestionById } from "@/lib/actions/question.action";
 import { getUserById } from "@/lib/actions/user.action";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
 import { auth } from "@clerk/nextjs";
+import { isValidObjectId } from "mongoose";
 import Image from "next/image";
 import Link from "next/link";
 
 export default async function Page({ params }: { params: { id: string } }) {
+  if (!isValidObjectId(params.id))
+    return (
+      <NoResult
+        title="No Question Found"
+        description="No Question found to your query"
+        link="/"
+        linkTitle="Back to Questions"
+      />
+    );
+
   const { userId } = auth();
 
   let mongoUser;
@@ -23,6 +35,16 @@ export default async function Page({ params }: { params: { id: string } }) {
   const question = await getQuestionById({
     questionId: JSON.stringify(params.id),
   });
+
+  if (!question)
+    return (
+      <NoResult
+        title="No Question Found"
+        description="No Question found to your query"
+        link="/"
+        linkTitle="Back to Questions"
+      />
+    );
 
   return (
     <>
@@ -47,12 +69,12 @@ export default async function Page({ params }: { params: { id: string } }) {
             <Votes
               itemId={JSON.stringify(question._id)}
               type="question"
-              userId={JSON.stringify(mongoUser._id)}
+              userId={JSON.stringify(mongoUser?._id)}
               upvotes={question.upVotes.length}
-              hasUpvoted={question.upVotes.includes(mongoUser._id)}
+              hasUpvoted={question.upVotes.includes(mongoUser?._id)}
               downvotes={question.downVotes.length}
-              hasDownvoted={question.downVotes.includes(mongoUser._id)}
-              hasSaved={mongoUser.saved.includes(question._id)}
+              hasDownvoted={question.downVotes.includes(mongoUser?._id)}
+              hasSaved={mongoUser?.saved.includes(question._id)}
             />
           </div>
         </div>
@@ -99,14 +121,14 @@ export default async function Page({ params }: { params: { id: string } }) {
 
       <AllAnswers
         questionId={question._id}
-        userId={JSON.stringify(mongoUser._id)}
+        userId={JSON.stringify(mongoUser?._id)}
         totalAnswers={question.answers.length}
       />
 
       <Answer
         question={question.content}
         questionId={JSON.stringify(question._id)}
-        userId={JSON.stringify(mongoUser._id)}
+        userId={JSON.stringify(mongoUser?._id)}
       />
     </>
   );

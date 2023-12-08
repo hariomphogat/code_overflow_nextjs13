@@ -11,6 +11,7 @@ import {
   GetQuestionsParams,
   QuestionVoteParams,
 } from "./shared.types";
+import { Types } from "mongoose";
 
 // get all questions
 export async function getQuestions(params: GetQuestionsParams) {
@@ -72,7 +73,8 @@ export async function getQuestionById(params: GetQuestionByIdParams) {
   try {
     connectToDatabase();
     const { questionId } = params;
-    const question = Question.findById({ _id: JSON.parse(questionId) })
+    const questionObjectId = new Types.ObjectId(JSON.parse(questionId));
+    const question = Question.findById({ _id: questionObjectId })
       .populate({ path: "tags", model: Tag, select: "_id name" })
       .populate({
         path: "author",

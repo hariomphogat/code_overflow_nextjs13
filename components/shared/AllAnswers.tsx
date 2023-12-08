@@ -62,9 +62,13 @@ const AllAnswers = async ({
                     type="answer"
                     userId={userId}
                     upvotes={answer.upVotes.length}
-                    hasUpvoted={answer.upVotes.includes(JSON.parse(userId))}
+                    hasUpvoted={answer.upVotes.includes(
+                      userId ? JSON.parse(userId) : undefined
+                    )}
                     downvotes={answer.downVotes.length}
-                    hasDownvoted={answer.downVotes.includes(JSON.parse(userId))}
+                    hasDownvoted={answer.downVotes.includes(
+                      userId ? JSON.parse(userId) : undefined
+                    )}
                   />
                 </div>
               </div>

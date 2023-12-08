@@ -1,13 +1,16 @@
 "use client";
 import { downvoteAnswer, upvoteAnswer } from "@/lib/actions/answer.action";
+import { viewQuestion } from "@/lib/actions/interaction.action";
 import {
   downvoteQuestion,
   upvoteQuestion,
 } from "@/lib/actions/question.action";
 import { saveQuestion } from "@/lib/actions/user.action";
 import { formatNumber } from "@/lib/utils";
+import { RedirectToSignIn } from "@clerk/nextjs";
 import Image from "next/image";
-import { redirect, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface Props {
   itemId: string;
@@ -31,12 +34,13 @@ const Votes = ({
   hasSaved = false,
 }: Props) => {
   const pathname = usePathname();
-  // const router = useRouter();
+  const router = useRouter();
 
   // handle votes
   const handleVote = async (action: string) => {
     if (!userId) {
-      return redirect("/sign-in");
+      <RedirectToSignIn />;
+      return;
     }
     if (action === "upvote") {
       if (type === "question") {
@@ -84,6 +88,9 @@ const Votes = ({
 
   // handle Save
   const handleSave = async () => {
+    if (!userId) {
+      return router.push(`/sign-in?redirect=${encodeURIComponent(pathname)}`);
+    }
     await saveQuestion({
       userId: JSON.parse(userId),
       questionId: JSON.parse(itemId),
@@ -91,6 +98,18 @@ const Votes = ({
       path: pathname,
     });
   };
+
+  // views interaction
+  useEffect(() => {
+    try {
+      viewQuestion({
+        questionId: JSON.parse(itemId),
+        userId: userId ? JSON.parse(userId) : undefined,
+      });
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+    }
+  }, [itemId, userId, pathname, router]);
 
   return (
     <div className="flex gap-5">
