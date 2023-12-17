@@ -11,7 +11,7 @@ interface Props {
 const RenderTag = ({ _id, name, totalQuestions, showCount }: Props) => {
   return (
     <Link
-      href={`/tag/${_id}`}
+      href={`/tags/${_id}`}
       className="flex cursor-pointer justify-between gap-2"
       key={_id}
     >

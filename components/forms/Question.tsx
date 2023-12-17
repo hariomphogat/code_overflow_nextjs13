@@ -93,6 +93,7 @@ const Question = ({ mongoUserId }: Props) => {
       // navigate to homePage
       router.push("/");
     } catch (error: any) {
+      console.log(error);
       throw new Error(`error during submission:${error}`);
     } finally {
       setIsSubmitting(false);

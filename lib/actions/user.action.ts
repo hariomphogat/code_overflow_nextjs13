@@ -19,8 +19,8 @@ import { _FilterQuery } from "mongoose";
 export async function getUserById(params: GetUserByIdParams) {
   try {
     connectToDatabase();
-    const userId = params.clerkId;
-    const user = await User.findOne({ clerkId: userId });
+    const { clerkId } = params;
+    const user = await User.findOne({ clerkId });
     return user;
   } catch (error) {
     console.log(error);
