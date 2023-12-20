@@ -53,3 +53,16 @@ export const formatNumber = (num: number): string => {
   }
   return num?.toString();
 };
+
+// format join date
+export function getJoinDate(date: Date): string {
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+  };
+  const formattedDate: string = new Intl.DateTimeFormat(
+    "en-US",
+    options
+  ).format(date);
+  return formattedDate;
+}

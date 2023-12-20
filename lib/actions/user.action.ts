@@ -9,12 +9,14 @@ import {
   GetAllUsersParams,
   GetSavedQuestionsParams,
   GetUserByIdParams,
+  GetUserStatsParams,
   ToggleSaveQuestionParams,
   UpdateUserParams,
 } from "./shared.types";
 import Question from "../models/question.model";
 import Tag from "../models/tag.model";
 import { _FilterQuery } from "mongoose";
+import Answer from "../models/answer.model";
 // get the user by the userID
 export async function getUserById(params: GetUserByIdParams) {
   try {
@@ -174,6 +176,69 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
     const savedQuestions = user.saved;
 
     return { questions: savedQuestions };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+// fetch user profile
+export async function getUserInfo(params: GetUserByIdParams) {
+  try {
+    connectToDatabase();
+    const { clerkId } = params;
+    const user = await User.findOne({ clerkId });
+    if (!user) {
+      throw new Error("User Not Found");
+    }
+    const totalQuestions = await Question.countDocuments({ author: user._id });
+    const totalAnswers = await Answer.countDocuments({ author: user._id });
+
+    return { user, totalAnswers, totalQuestions };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+// get all question by userId
+export async function getUserQuestions(params: GetUserStatsParams) {
+  try {
+    connectToDatabase();
+    const { userId, page = 1, pageSize = 10 } = params;
+    const totalQuestions = Question.countDocuments({ author: userId });
+    const skip = (page - 1) * pageSize;
+    const userQuestions = await Question.find({ author: userId })
+      .sort({ views: -1, upvotes: -1 })
+      .skip(skip)
+      .limit(pageSize)
+      .populate([
+        { path: "author", model: User, select: "_id clerkId name picture" },
+        { path: "tags", model: Tag, select: "_id name" },
+      ]);
+    return { totalQuestions, questions: userQuestions };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+// get all ANSWERS by userId
+export async function getUserAnswers(params: GetUserStatsParams) {
+  try {
+    connectToDatabase();
+    const { userId, page = 1, pageSize = 10 } = params;
+    const totalAnswers = Answer.countDocuments({ author: userId });
+    const skip = (page - 1) * pageSize;
+    const userAnswers = await Answer.find({ author: userId })
+      .sort({ upvotes: -1 })
+      .skip(skip)
+      .limit(pageSize)
+      .populate([
+        { path: "author", model: User, select: "_id clerkId name picture" },
+        { path: "question", model: Question, select: "_id title" },
+      ]);
+    return { totalAnswers, answers: userAnswers };
   } catch (error) {
     console.log(error);
     throw error;

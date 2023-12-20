@@ -4,11 +4,13 @@ import Metric from "../shared/Metric";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
 
 interface QuestionProps {
+  clerkId?: string;
   _id: string;
   title: string;
   tags: { _id: string; name: string }[];
   author: {
     _id: string;
+    clerkId: string;
     name: string;
     picture: string;
   };
@@ -19,6 +21,7 @@ interface QuestionProps {
 }
 
 const QuestionCard = ({
+  clerkId,
   _id,
   title,
   tags,
@@ -57,7 +60,7 @@ const QuestionCard = ({
             alt="User"
             value={author.name}
             title={`• asked ${postTime}`}
-            href={`/profile/${author._id.toString()}`}
+            href={`/profile/${author.clerkId.toString()}`}
             isAuthor
             textStyles="body-medium text-dark400_light700"
           />
