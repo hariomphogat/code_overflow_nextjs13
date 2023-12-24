@@ -2,6 +2,9 @@ import Link from "next/link";
 import RenderTag from "../shared/RenderTag";
 import Metric from "../shared/Metric";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
+import { SignedIn, auth } from "@clerk/nextjs";
+
+import EditDeleteAction from "../shared/EditDeleteAction";
 
 interface QuestionProps {
   clerkId?: string;
@@ -31,10 +34,14 @@ const QuestionCard = ({
   answers,
   createdAt,
 }: QuestionProps) => {
+  const showActionButtons = clerkId && clerkId === author.clerkId;
+  const { userId: currentUserId } = auth();
+  console.log("currentUserId:", currentUserId);
+  console.log("author:", author.clerkId);
   const postTime = getTimeStamp(createdAt);
 
   return (
-    <div className="card-wrapper rounded-[10px] p-9 sm:px-11">
+    <div className="card-wrapper mt-4 rounded-[10px] p-9 sm:px-11">
       <div className="flex flex-col-reverse items-start justify-between gap-5 sm:flex-row">
         <div>
           <span className="subtle-regular text-dark400_light700 line-clamp-1 flex sm:hidden">
@@ -47,6 +54,11 @@ const QuestionCard = ({
           </Link>
         </div>
         {/* if the creater has signed in then show the edit/delete button */}
+        <SignedIn>
+          {showActionButtons && (
+            <EditDeleteAction type="question" itemId={JSON.stringify(_id)} />
+          )}
+        </SignedIn>
       </div>
       <div className="mt-3.5 flex flex-wrap gap-2">
         {tags.map((tag) => (

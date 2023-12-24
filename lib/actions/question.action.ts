@@ -7,11 +7,15 @@ import User from "../models/user.model";
 import { connectToDatabase } from "../mongoose";
 import {
   CreateQuestionParams,
+  DeleteQuestionParams,
+  EditQuestionParams,
   GetQuestionByIdParams,
   GetQuestionsParams,
   QuestionVoteParams,
 } from "./shared.types";
 import { Types } from "mongoose";
+import Answer from "../models/answer.model";
+import Interaction from "../models/interaction.model";
 
 // get all questions
 export async function getQuestions(params: GetQuestionsParams) {
@@ -62,6 +66,29 @@ export async function createQuestion(params: CreateQuestionParams) {
 
     //  Create an interaction record for the user's ask_question action.
     // Increment author's reputation by +5 for creating a question.
+    revalidatePath(path);
+  } catch (error: any) {
+    throw new Error(`unbale to create post:${error}`);
+  }
+}
+
+//  edit a question
+export async function editQuestion(params: EditQuestionParams) {
+  try {
+    connectToDatabase();
+
+    const { questionId, title, content, path } = params;
+
+    // create the question
+    const question = await Question.findById(questionId).populate("tags");
+    if (!question) {
+      throw new Error("Question not found");
+    }
+    question.title = title;
+    question.content = content;
+
+    await question.save();
+
     revalidatePath(path);
   } catch (error: any) {
     throw new Error(`unbale to create post:${error}`);
@@ -176,5 +203,25 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
     throw error;
   } finally {
     isDownvoting = false;
+  }
+}
+
+// Delete a question
+export async function deleteQuestion(params: DeleteQuestionParams) {
+  try {
+    connectToDatabase();
+    const { questionId, path } = params;
+    await Question.deleteOne({ _id: questionId });
+    await Answer.deleteMany({ question: questionId });
+    await Interaction.deleteMany({ question: questionId });
+    await Tag.updateMany(
+      { questions: questionId },
+      { $pull: { questions: questionId } }
+    );
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
 }

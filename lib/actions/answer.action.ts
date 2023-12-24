@@ -6,9 +6,11 @@ import { connectToDatabase } from "../mongoose";
 import {
   AnswerVoteParams,
   CreateAnswerParams,
+  DeleteAnswerParams,
   GetAnswersParams,
 } from "./shared.types";
 import Question from "../models/question.model";
+import Interaction from "../models/interaction.model";
 
 // create an answer
 export async function createAnswer(params: CreateAnswerParams) {
@@ -128,5 +130,29 @@ export async function downvoteAnswer(params: AnswerVoteParams) {
     throw error;
   } finally {
     isDownvoting = false;
+  }
+}
+
+// Delete an answer
+export async function deleteAnswer(params: DeleteAnswerParams) {
+  try {
+    connectToDatabase();
+    const { answerId, path } = params;
+    const answer = await Answer.findById(answerId);
+
+    if (!answer) {
+      throw new Error("Answer Not Found");
+    }
+
+    await Answer.deleteOne({ _id: answerId });
+    await Question.updateMany(
+      { _id: answer.question },
+      { $pull: { answers: answerId } }
+    );
+    await Interaction.deleteMany({ answer: answerId });
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
 }
