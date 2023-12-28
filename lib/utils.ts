@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import { parse } from "parse5";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -66,3 +67,28 @@ export function getJoinDate(date: Date): string {
   ).format(date);
   return formattedDate;
 }
+
+// extract text from html code
+export const extractTextFromHTML = (html: any): string => {
+  const javascriptCodeRegex = /<code>([\s\S]+?)<\/code>/i;
+  const match = html.match(javascriptCodeRegex);
+
+  if (match) {
+    // If the HTML contains <code> block
+    const rawJavaScriptCode = match[1].replace(/<\/?[^>]+(>|$)/g, "").trim(); // Remove HTML tags and trim
+    return rawJavaScriptCode;
+  } else {
+    // If the HTML does not contain <code> block
+    const parsedHTML = parse(html);
+    const textContent = getTextContent(parsedHTML);
+    return textContent;
+  }
+};
+const getTextContent = (node: any): string => {
+  if (node.childNodes) {
+    return node.childNodes.map((child: any) => getTextContent(child)).join(" ");
+  } else if (node.nodeName === "#text") {
+    return node.value.trim();
+  }
+  return "";
+};

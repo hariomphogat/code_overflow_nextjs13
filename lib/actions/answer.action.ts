@@ -103,7 +103,6 @@ export async function downvoteAnswer(params: AnswerVoteParams) {
     isDownvoting = true;
     connectToDatabase();
     const { answerId, userId, hasupVoted, hasdownVoted, path } = params;
-    console.log(answerId, userId, hasupVoted, hasdownVoted, path);
     let updateQuery = {};
     if (hasdownVoted) {
       // user is removing the downovote

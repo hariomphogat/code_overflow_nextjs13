@@ -49,7 +49,7 @@ const page = async ({ params, searchParams }: URLProps) => {
             <div className="mt-5 flex flex-wrap items-center justify-start gap-5">
               {userInfo.user.portfolioWebsite && (
                 <ProfileLink
-                  imgUrl="/assets/icons/location.svg"
+                  imgUrl="/assets/icons/link.svg"
                   href={userInfo.user.portfolioWebsite}
                   title="Portfolio"
                 />
@@ -75,7 +75,7 @@ const page = async ({ params, searchParams }: URLProps) => {
         <div className="flex justify-end max-sm:mb-5 max-sm:w-full sm:mt-3">
           <SignedIn>
             {clerkId === userInfo.user.clerkId && (
-              <Link href="/profile/edit">
+              <Link href={`/profile/edit/${clerkId}`}>
                 <Button className="paragraph-medium btn-secondary text-dark300_light900 min-h-[46px] min-w-[175px] px-4 py-3 ">
                   Edit Profile
                 </Button>

@@ -2,7 +2,7 @@ import Link from "next/link";
 import RenderTag from "../shared/RenderTag";
 import Metric from "../shared/Metric";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
-import { SignedIn, auth } from "@clerk/nextjs";
+import { SignedIn } from "@clerk/nextjs";
 
 import EditDeleteAction from "../shared/EditDeleteAction";
 
@@ -35,9 +35,6 @@ const QuestionCard = ({
   createdAt,
 }: QuestionProps) => {
   const showActionButtons = clerkId && clerkId === author.clerkId;
-  const { userId: currentUserId } = auth();
-  console.log("currentUserId:", currentUserId);
-  console.log("author:", author.clerkId);
   const postTime = getTimeStamp(createdAt);
 
   return (

@@ -1,12 +1,13 @@
 import Link from "next/link";
 import Metric from "../shared/Metric";
-import { formatNumber, getTimeStamp } from "@/lib/utils";
+import { extractTextFromHTML, formatNumber, getTimeStamp } from "@/lib/utils";
 import { SignedIn } from "@clerk/nextjs";
 import EditDeleteAction from "../shared/EditDeleteAction";
 
 interface AnswerProps {
   clerkId?: string;
   _id: string;
+  answerId: string;
   title: string;
   answer: string;
   author: {
@@ -22,6 +23,7 @@ interface AnswerProps {
 const AnswerCard = ({
   clerkId,
   _id,
+  answerId,
   title,
   answer,
   author,
@@ -30,19 +32,6 @@ const AnswerCard = ({
 }: AnswerProps) => {
   const showActionButtons = clerkId && clerkId === author.clerkId;
   const postTime = getTimeStamp(createdAt);
-
-  function extractJavaScriptCode(input: string) {
-    const javascriptCodeRegex = /<code>([\s\S]+?)<\/code>/i;
-    const match = input.match(javascriptCodeRegex);
-
-    if (match) {
-      const rawJavaScriptCode = match[1].replace(/<\/?[^>]+(>|$)/g, "").trim(); // Remove HTML tags and trim
-      return rawJavaScriptCode.slice(0, 70);
-    } else {
-      return input.slice(0, 70); // Convert non-matching input to string
-    }
-  }
-
   return (
     <div className="card-wrapper mt-4 rounded-[10px] p-9 sm:px-11">
       <div className="flex flex-col-reverse items-start justify-between gap-5 sm:flex-row">
@@ -54,7 +43,7 @@ const AnswerCard = ({
         {/* if the creater has signed in then show the delete button */}
         <SignedIn>
           {showActionButtons && (
-            <EditDeleteAction type="answer" itemId={JSON.stringify(_id)} />
+            <EditDeleteAction type="answer" itemId={JSON.stringify(answerId)} />
           )}
         </SignedIn>
       </div>
@@ -62,7 +51,7 @@ const AnswerCard = ({
       <div className="mt-1  rounded-lg bg-slate-200 px-4 py-2 outline-none dark:bg-slate-800">
         <Link href={`/question/${_id.toString()}`}>
           <h3 className="text-dark200_light900 paragraph-semibold line-clamp-1 flex-1">
-            {extractJavaScriptCode(answer)}
+            {extractTextFromHTML(answer)}
           </h3>
         </Link>
       </div>

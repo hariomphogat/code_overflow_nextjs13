@@ -30,6 +30,7 @@ const AnswerTab = async ({ userId, clerkId }: Props) => {
           key={answer.question._id}
           clerkId={clerkId}
           _id={answer.question._id}
+          answerId={answer._id}
           title={answer.question.title}
           answer={answer.content}
           author={answer.author}
