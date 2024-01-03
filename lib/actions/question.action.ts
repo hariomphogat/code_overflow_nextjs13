@@ -225,3 +225,17 @@ export async function deleteQuestion(params: DeleteQuestionParams) {
     throw error;
   }
 }
+
+// get popular questions
+export async function getHotQuestions() {
+  try {
+    connectToDatabase();
+    const hotQuestions = await Question.find({})
+      .sort({ views: -1, upvotes: -1 })
+      .limit(5);
+    return hotQuestions;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}

@@ -1,10 +1,13 @@
-import { PopularTags, TopQuestions } from "@/constants";
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import RenderTag from "../RenderTag";
+import { getHotQuestions } from "@/lib/actions/question.action";
+import { getPopularTags } from "@/lib/actions/tag.actions";
 
-const RightSidebar = () => {
+const RightSidebar = async () => {
+  const hotQuestions = await getHotQuestions();
+  const popularTags = await getPopularTags();
   return (
     <section
       className="background-light900_dark200 light-border
@@ -16,14 +19,16 @@ const RightSidebar = () => {
       <div className="flex flex-col gap-6">
         <h3 className="h3-bold text-dark200_light900">Top Questions</h3>
         <div className="mt-7 flex w-full flex-col gap-[30px]">
-          {TopQuestions.map((qs) => {
+          {hotQuestions.map((qs) => {
             return (
               <Link
                 href={`/question/${qs._id}`}
                 className="flex cursor-pointer flex-row items-center justify-between gap-7"
                 key={qs._id}
               >
-                <p className="body-medium text-dark500_light700">{qs.text}</p>
+                <p className="body-medium text-dark500_light700 line-clamp-2">
+                  {qs.title}
+                </p>
                 <Image
                   src="assets/icons/chevron-right.svg"
                   alt="chevron right"
@@ -40,13 +45,13 @@ const RightSidebar = () => {
       <div className="mt-16">
         <h3 className="h3-bold text-dark200_light900">Popular Tags</h3>
         <div className="mt-7 flex w-full flex-col gap-4">
-          {PopularTags.map((tag) => {
+          {popularTags.map((tag: any) => {
             return (
               <RenderTag
                 key={tag._id}
                 _id={tag._id}
-                name={tag.label}
-                totalQuestions={tag.count}
+                name={tag.name}
+                totalQuestions={tag.numberOfQuestions}
                 showCount
               />
             );
