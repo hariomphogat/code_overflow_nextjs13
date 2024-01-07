@@ -26,7 +26,7 @@ export default async function Page({ params, searchParams }: URLProps) {
     tagId: JSON.parse(JSON.stringify(tagId)),
     page: 1,
     pageSize: 10,
-    searchQuery: JSON.stringify(searchQuery),
+    searchQuery,
   });
 
   return (
@@ -34,7 +34,7 @@ export default async function Page({ params, searchParams }: URLProps) {
       <h1 className="h1-bold text-dark100_light900">{result.tagTitle}</h1>
       <div className="mt-11 flex flex-row justify-between gap-5 max-sm:flex-col sm:items-center">
         <LocalSearchBar
-          route="/"
+          route={`/tags/${params.id}`}
           iconPosition="left"
           imgSrc="/assets/icons/search.svg"
           placeholder="search for questions"

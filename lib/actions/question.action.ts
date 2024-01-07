@@ -13,7 +13,7 @@ import {
   GetQuestionsParams,
   QuestionVoteParams,
 } from "./shared.types";
-import { Types } from "mongoose";
+import { FilterQuery, Types } from "mongoose";
 import Answer from "../models/answer.model";
 import Interaction from "../models/interaction.model";
 
@@ -22,7 +22,21 @@ export async function getQuestions(params: GetQuestionsParams) {
   try {
     connectToDatabase();
 
-    const questions = await Question.find({})
+    const { searchQuery } = params;
+    const query: FilterQuery<typeof Question> = {};
+    if (searchQuery) {
+      const escapedSearchQuery = searchQuery.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&"
+      );
+
+      query.$or = [
+        { title: { $regex: new RegExp(escapedSearchQuery, "i") } },
+        { content: { $regex: new RegExp(escapedSearchQuery, "i") } },
+      ];
+    }
+
+    const questions = await Question.find(query)
       .populate({ path: "tags", model: Tag })
       .populate({ path: "author", model: User })
       .sort({ createdAt: -1 });
