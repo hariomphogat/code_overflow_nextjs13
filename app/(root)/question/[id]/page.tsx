@@ -8,12 +8,19 @@ import Votes from "@/components/shared/Votes";
 import { getQuestionById } from "@/lib/actions/question.action";
 import { getUserById } from "@/lib/actions/user.action";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
+
 import { auth } from "@clerk/nextjs";
 import { isValidObjectId } from "mongoose";
 import Image from "next/image";
 import Link from "next/link";
 
-export default async function Page({ params }: { params: { id: string } }) {
+export default async function Page({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: any;
+}) {
   if (!isValidObjectId(params.id))
     return (
       <NoResult
@@ -123,6 +130,8 @@ export default async function Page({ params }: { params: { id: string } }) {
         questionId={question._id}
         userId={JSON.stringify(mongoUser?._id)}
         totalAnswers={question.answers.length}
+        page={searchParams?.page}
+        filter={searchParams?.filter}
       />
 
       <Answer

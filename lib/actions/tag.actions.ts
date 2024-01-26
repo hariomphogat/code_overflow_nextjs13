@@ -36,11 +36,30 @@ export async function getTopInteractedTags(params: GetTopInteractedTagsParams) {
 export async function getAllTags(params: GetAllTagsParams) {
   try {
     connectToDatabase();
-    const { searchQuery } = params;
+    const { searchQuery, filter } = params;
     const query: FilterQuery<typeof Tag> = searchQuery
       ? { name: { $regex: new RegExp(searchQuery, "i") } }
       : {};
-    const tags = await Tag.find(query);
+
+    let sortOptions = {};
+    switch (filter) {
+      case "popular":
+        sortOptions = { questions: -1 };
+        break;
+      case "recent":
+        sortOptions = { createdAt: -1 };
+        break;
+      case "name":
+        sortOptions = { name: 1 };
+        break;
+      case "old":
+        sortOptions = { createdAt: 1 };
+        break;
+
+      default:
+        break;
+    }
+    const tags = await Tag.find(query).sort(sortOptions);
     if (!tags) throw new Error("Tag not found");
     return { tags };
   } catch (error) {
@@ -52,20 +71,42 @@ export async function getAllTags(params: GetAllTagsParams) {
 export async function getQuestionsByTagId(params: GetQuestionsByTagIdParams) {
   try {
     connectToDatabase();
-    const { tagId, searchQuery } = params;
+    const { tagId, searchQuery, filter } = params;
     const tagFilter: FilterQuery<ITag> = { _id: tagId };
+
+    let sortOptions = {};
+    let matchOptions = {};
+    switch (filter) {
+      case "newest":
+        sortOptions = { createdAt: -1 };
+        break;
+      case "frequent":
+        sortOptions = { views: -1 };
+        break;
+      case "unanswered":
+        matchOptions = { answers: { $size: 0 } };
+        break;
+      // TODO: add functionality for recommended.
+      default:
+        break;
+    }
 
     const tag = await Tag.findOne(tagFilter).populate({
       path: "questions",
       model: Question,
-      match: searchQuery
-        ? [
-            { title: { $regex: new RegExp(searchQuery, "i") } },
-            { content: { $regex: new RegExp(searchQuery, "i") } },
-          ]
-        : {},
+      match: {
+        ...matchOptions,
+        ...(searchQuery
+          ? {
+              $or: [
+                { title: { $regex: new RegExp(searchQuery, "i") } },
+                { content: { $regex: new RegExp(searchQuery, "i") } },
+              ],
+            }
+          : {}),
+      },
       options: {
-        sort: { createdAt: -1 },
+        sort: sortOptions,
       },
       populate: [
         {

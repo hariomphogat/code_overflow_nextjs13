@@ -22,11 +22,13 @@ export default async function Page({ params, searchParams }: URLProps) {
     );
   const tagId = params.id;
   const searchQuery = searchParams.q;
+  const filter = searchParams.filter;
   const result = await getQuestionsByTagId({
     tagId: JSON.parse(JSON.stringify(tagId)),
     page: 1,
     pageSize: 10,
     searchQuery,
+    filter,
   });
 
   return (
