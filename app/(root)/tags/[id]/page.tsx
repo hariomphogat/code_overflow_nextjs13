@@ -2,6 +2,7 @@ import QuestionCard from "@/components/cards/QuestionCard";
 import HomeFilters from "@/components/home/HomeFilters";
 import Filter from "@/components/shared/Filter";
 import NoResult from "@/components/shared/NoResult";
+import Pagination from "@/components/shared/Pagination";
 import LocalSearchBar from "@/components/shared/search/LocalSearchBar";
 import { HomePageFilters } from "@/constants/filters";
 import { getQuestionsByTagId } from "@/lib/actions/tag.actions";
@@ -25,8 +26,8 @@ export default async function Page({ params, searchParams }: URLProps) {
   const filter = searchParams.filter;
   const result = await getQuestionsByTagId({
     tagId: JSON.parse(JSON.stringify(tagId)),
-    page: 1,
-    pageSize: 10,
+    page: searchParams.page ? +searchParams.page : 1,
+    pageSize: 20,
     searchQuery,
     filter,
   });
@@ -74,6 +75,12 @@ export default async function Page({ params, searchParams }: URLProps) {
             linkTitle="Ask a Question"
           />
         )}
+      </div>
+      <div className="mt-10">
+        <Pagination
+          pageNumber={searchParams.page ? +searchParams.page : 1}
+          isNext={result.isNext}
+        />
       </div>
     </>
   );

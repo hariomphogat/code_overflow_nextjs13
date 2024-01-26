@@ -130,7 +130,7 @@ export default async function Page({
         questionId={question._id}
         userId={JSON.stringify(mongoUser?._id)}
         totalAnswers={question.answers.length}
-        page={searchParams?.page}
+        page={searchParams.page}
         filter={searchParams?.filter}
       />
 

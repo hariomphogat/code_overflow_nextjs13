@@ -36,7 +36,7 @@ export async function getTopInteractedTags(params: GetTopInteractedTagsParams) {
 export async function getAllTags(params: GetAllTagsParams) {
   try {
     connectToDatabase();
-    const { searchQuery, filter } = params;
+    const { searchQuery, filter, page = 1, pageSize = 20 } = params;
     const query: FilterQuery<typeof Tag> = searchQuery
       ? { name: { $regex: new RegExp(searchQuery, "i") } }
       : {};
@@ -59,9 +59,18 @@ export async function getAllTags(params: GetAllTagsParams) {
       default:
         break;
     }
-    const tags = await Tag.find(query).sort(sortOptions);
+
+    const skipAmount = (page - 1) * pageSize;
+    const tags = await Tag.find(query)
+      .skip(skipAmount)
+      .limit(pageSize)
+      .sort(sortOptions);
     if (!tags) throw new Error("Tag not found");
-    return { tags };
+
+    const totalTags = await Tag.countDocuments(query);
+    const isNext = totalTags > skipAmount + tags.length;
+
+    return { tags, isNext };
   } catch (error) {
     console.log(error);
     throw error;
@@ -71,7 +80,7 @@ export async function getAllTags(params: GetAllTagsParams) {
 export async function getQuestionsByTagId(params: GetQuestionsByTagIdParams) {
   try {
     connectToDatabase();
-    const { tagId, searchQuery, filter } = params;
+    const { tagId, searchQuery, filter, page = 1, pageSize = 20 } = params;
     const tagFilter: FilterQuery<ITag> = { _id: tagId };
 
     let sortOptions = {};
@@ -91,6 +100,7 @@ export async function getQuestionsByTagId(params: GetQuestionsByTagIdParams) {
         break;
     }
 
+    const skipAmount = (page - 1) * pageSize;
     const tag = await Tag.findOne(tagFilter).populate({
       path: "questions",
       model: Question,
@@ -106,6 +116,8 @@ export async function getQuestionsByTagId(params: GetQuestionsByTagIdParams) {
           : {}),
       },
       options: {
+        skip: skipAmount,
+        limit: pageSize,
         sort: sortOptions,
       },
       populate: [
@@ -123,9 +135,32 @@ export async function getQuestionsByTagId(params: GetQuestionsByTagIdParams) {
     });
     if (!tag) throw new Error("Tag not found");
 
-    const questions = tag.questions;
+    //  to check if there is a next page
+    const nextTag = await Tag.findOne(tagFilter).populate({
+      path: "questions",
+      model: Question,
+      match: {
+        ...matchOptions,
+        ...(searchQuery
+          ? {
+              $or: [
+                { title: { $regex: new RegExp(searchQuery, "i") } },
+                { content: { $regex: new RegExp(searchQuery, "i") } },
+              ],
+            }
+          : {}),
+      },
+      options: {
+        skip: skipAmount + pageSize,
+        limit: 1,
+        sort: sortOptions,
+      },
+    });
 
-    return { tagTitle: tag.name, questions };
+    const questions = tag.questions;
+    const isNext = nextTag.questions.length > 0;
+
+    return { tagTitle: tag.name, questions, isNext };
   } catch (error) {
     console.log(error);
     throw error;
