@@ -1,10 +1,68 @@
+"use client";
 import { Input } from "@/components/ui/input";
+import { formUrlQuery, removeKeysFromQuery } from "@/lib/utils";
 import Image from "next/image";
-import React from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import GlobalResult from "./GlobalResult";
 
 const GlobalSearch = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const SearchContainerRef = useRef(null);
+
+  const query = searchParams.get("global");
+  const [search, setSearch] = useState(query || "");
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: any) => {
+      if (
+        SearchContainerRef.current &&
+        // @ts-ignore
+        !SearchContainerRef.current.contains(event.target)
+      ) {
+        setIsOpen(false);
+        setSearch("");
+      }
+    };
+    setIsOpen(false);
+    setSearch("");
+    document.addEventListener("click", handleOutsideClick);
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+    };
+  }, [pathname]);
+
+  // push to the new url as the search query changes
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (search) {
+        const newUrl = formUrlQuery({
+          params: searchParams.toString(),
+          key: "global",
+          value: search,
+        });
+        router.push(newUrl, { scroll: false });
+      } else {
+        if (query) {
+          const newUrl = removeKeysFromQuery({
+            params: searchParams.toString(),
+            keysToRemove: ["global", "type"],
+          });
+          router.push(newUrl, { scroll: false });
+        }
+      }
+    }, 900);
+    return () => clearTimeout(delayDebounceFn);
+  }, [search, searchParams, router, pathname, query]);
+
   return (
-    <div className="relative w-full max-w-[600px] max-lg:hidden">
+    <div
+      className="relative w-full max-w-[600px] max-lg:hidden"
+      ref={SearchContainerRef}
+    >
       <div className="background-light800_darkgradient relative flex min-h-[56px] grow items-center gap-1 rounded-xl px-4">
         <Image
           src="/assets/icons/search.svg"
@@ -15,10 +73,21 @@ const GlobalSearch = () => {
         />
         <Input
           type="text"
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            if (!isOpen) {
+              setIsOpen(true);
+            }
+            if (e.target.value === "" && isOpen) {
+              setIsOpen(false);
+            }
+          }}
           placeholder="search globally.."
-          className="paragraph-regular no-focus  background-light800_darkgradient border-none shadow-none outline-none "
+          className="paragraph-regular no-focus  background-light800_darkgradient text-dark400_light700 border-none shadow-none outline-none"
         />
       </div>
+      {isOpen && <GlobalResult />}
     </div>
   );
 };
