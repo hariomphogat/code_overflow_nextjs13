@@ -11,6 +11,7 @@ import {
 } from "./shared.types";
 import Question from "../models/question.model";
 import Interaction from "../models/interaction.model";
+import User from "../models/user.model";
 
 // create an answer
 export async function createAnswer(params: CreateAnswerParams) {
@@ -24,11 +25,20 @@ export async function createAnswer(params: CreateAnswerParams) {
     });
 
     // Add the answer to the question's answer array
-    await Question.findByIdAndUpdate(question, {
+    const questionObject = await Question.findByIdAndUpdate(question, {
       $push: { answers: newAnswer._id },
     });
 
-    // TODO: Add interaction...
+    // Add interaction...
+    await Interaction.create({
+      user: author,
+      action: "answer",
+      question,
+      answer: newAnswer._id,
+      tags: questionObject.tags,
+    });
+    // Add Reputation
+    await User.findByIdAndUpdate(author, { $inc: { reputation: 10 } });
     revalidatePath(path);
   } catch (error) {
     console.log(error);
@@ -110,6 +120,35 @@ export async function upvoteAnswer(params: AnswerVoteParams) {
 
     if (!answer) throw new Error("Answer not found.");
 
+    // Add Interaction
+    !hasupVoted
+      ? await Interaction.create({
+          user: userId,
+          action: "upvote_answer",
+          question: answer.question,
+          answer: answerId,
+          tags: answer.question.tags,
+        })
+      : await Interaction.deleteOne({
+          answer: answerId,
+          action: "upvote_answer",
+        });
+
+    hasdownVoted &&
+      (await Interaction.deleteOne({
+        answer: answerId,
+        action: "downvote_answer",
+      }));
+
+    // add Reputation
+    await User.findByIdAndUpdate(userId, {
+      $inc: { reputation: hasdownVoted ? 4 : hasupVoted ? -2 : 2 },
+    });
+
+    await User.findByIdAndUpdate(answer.author, {
+      $inc: { reputation: hasdownVoted ? 20 : hasupVoted ? -10 : 10 },
+    });
+
     revalidatePath(path);
   } catch (error) {
     console.log(error);
@@ -150,6 +189,34 @@ export async function downvoteAnswer(params: AnswerVoteParams) {
 
     if (!answer) throw new Error("Answer not found.");
 
+    // Add Interaction
+    !hasdownVoted
+      ? await Interaction.create({
+          user: userId,
+          action: "downvote_answer",
+          question: answer.question,
+          answer: answerId,
+          tags: answer.question.tags,
+        })
+      : await Interaction.deleteOne({
+          answer: answerId,
+          action: "downvote_answer",
+        });
+
+    hasupVoted &&
+      (await Interaction.deleteOne({
+        answer: answerId,
+        action: "upvote_answer",
+      }));
+
+    // add Reputation
+    await User.findByIdAndUpdate(userId, {
+      $inc: { reputation: hasupVoted ? -4 : hasdownVoted ? 2 : -2 },
+    });
+    await User.findByIdAndUpdate(answer.author, {
+      $inc: { reputation: hasupVoted ? -20 : hasdownVoted ? 10 : -10 },
+    });
+
     revalidatePath(path);
   } catch (error) {
     console.log(error);
@@ -163,12 +230,16 @@ export async function downvoteAnswer(params: AnswerVoteParams) {
 export async function deleteAnswer(params: DeleteAnswerParams) {
   try {
     connectToDatabase();
-    const { answerId, path } = params;
+    const { answerId, path, clerkId } = params;
     const answer = await Answer.findById(answerId);
-
     if (!answer) {
       throw new Error("Answer Not Found");
     }
+    // add another security layer by checking if the author and the current user is same.
+    const user = await User.findOne({ clerkId });
+
+    if (user?._id.toString() !== answer.author.toString())
+      return console.log("restricted");
 
     await Answer.deleteOne({ _id: answerId });
     await Question.updateMany(
@@ -176,6 +247,8 @@ export async function deleteAnswer(params: DeleteAnswerParams) {
       { $pull: { answers: answerId } }
     );
     await Interaction.deleteMany({ answer: answerId });
+    // decrease the reputation of the user by -10
+    await User.findByIdAndUpdate(user._id, { $inc: { reputation: -10 } });
     revalidatePath(path);
   } catch (error) {
     console.log(error);

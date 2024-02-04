@@ -8,8 +8,9 @@ import { usePathname, useRouter } from "next/navigation";
 interface Props {
   type: "question" | "answer";
   itemId: string;
+  clerkId?: string;
 }
-const EditDeleteAction = ({ type, itemId }: Props) => {
+const EditDeleteAction = ({ type, itemId, clerkId }: Props) => {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -19,10 +20,18 @@ const EditDeleteAction = ({ type, itemId }: Props) => {
   const handleDelete = async () => {
     if (type === "question") {
       // delte question
-      await deleteQuestion({ questionId: JSON.parse(itemId), path: pathname });
+      await deleteQuestion({
+        questionId: JSON.parse(itemId),
+        path: pathname,
+        clerkId,
+      });
     } else if (type === "answer") {
       // delete answer
-      await deleteAnswer({ answerId: JSON.parse(itemId), path: pathname });
+      await deleteAnswer({
+        answerId: JSON.parse(itemId),
+        path: pathname,
+        clerkId,
+      });
     }
   };
 

@@ -102,9 +102,18 @@ export async function createQuestion(params: CreateQuestionParams) {
     });
 
     //  Create an interaction record for the user's ask_question action.
+    console.log(tagDocuments);
+    await Interaction.create({
+      user: author,
+      action: "ask_question",
+      question: question._id,
+      tags: tagDocuments,
+    });
     // Increment author's reputation by +5 for creating a question.
+    await User.findByIdAndUpdate(author, { $inc: { reputation: 5 } });
     revalidatePath(path);
   } catch (error: any) {
+    console.log(error);
     throw new Error(`unbale to create post:${error}`);
   }
 }
@@ -189,7 +198,33 @@ export async function upvoteQuestion(params: QuestionVoteParams) {
 
     if (!question) throw new Error("Question Not Found");
 
-    // TODO: Update user Reputation by +10
+    // Add Interaction
+    !hasupVoted
+      ? await Interaction.create({
+          user: userId,
+          action: "upvote_question",
+          question: questionId,
+          tags: question.tags,
+        })
+      : await Interaction.deleteOne({
+          question: questionId,
+          action: "upvote_question",
+        });
+
+    hasdownVoted &&
+      (await Interaction.deleteOne({
+        question: questionId,
+        action: "downvote_question",
+      }));
+
+    // add Reputation
+    await User.findByIdAndUpdate(userId, {
+      $inc: { reputation: hasdownVoted ? 4 : hasupVoted ? -2 : 2 },
+    });
+
+    await User.findByIdAndUpdate(question.author, {
+      $inc: { reputation: hasdownVoted ? 20 : hasupVoted ? -10 : 10 },
+    });
 
     revalidatePath(path);
   } catch (error) {
@@ -232,7 +267,32 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
     });
     if (!question) throw new Error("Question Not Found");
 
-    // TODO: Update user Reputaion by +10
+    // Add Interaction
+    !hasdownVoted
+      ? await Interaction.create({
+          user: userId,
+          action: "downvote_question",
+          question: questionId,
+          tags: question.tags,
+        })
+      : await Interaction.deleteOne({
+          question: questionId,
+          action: "downvote_question",
+        });
+
+    hasupVoted &&
+      (await Interaction.deleteOne({
+        question: questionId,
+        action: "upvote_question",
+      }));
+
+    // add Reputation
+    await User.findByIdAndUpdate(userId, {
+      $inc: { reputation: hasupVoted ? -4 : hasdownVoted ? 2 : -2 },
+    });
+    await User.findByIdAndUpdate(question.author, {
+      $inc: { reputation: hasupVoted ? -20 : hasdownVoted ? 10 : -10 },
+    });
 
     revalidatePath(path);
   } catch (error) {
@@ -247,7 +307,16 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
 export async function deleteQuestion(params: DeleteQuestionParams) {
   try {
     connectToDatabase();
-    const { questionId, path } = params;
+    const { questionId, path, clerkId } = params;
+    const question = await Question.findById(questionId);
+    if (!question) {
+      throw new Error("Question Not Found");
+    }
+    // add another security layer by checking if the author and the current user is same.
+    const user = await User.findOne({ clerkId });
+    if (user?._id.toString() !== question.author.toString())
+      return console.log("restricted");
+
     await Question.deleteOne({ _id: questionId });
     await Answer.deleteMany({ question: questionId });
     await Interaction.deleteMany({ question: questionId });
@@ -255,7 +324,8 @@ export async function deleteQuestion(params: DeleteQuestionParams) {
       { questions: questionId },
       { $pull: { questions: questionId } }
     );
-
+    // decrease the reputation of the user by -5
+    await User.findByIdAndUpdate(user._id, { $inc: { reputation: -5 } });
     revalidatePath(path);
   } catch (error) {
     console.log(error);

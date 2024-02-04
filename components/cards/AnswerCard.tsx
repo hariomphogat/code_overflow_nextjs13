@@ -43,7 +43,11 @@ const AnswerCard = ({
         {/* if the creater has signed in then show the delete button */}
         <SignedIn>
           {showActionButtons && (
-            <EditDeleteAction type="answer" itemId={JSON.stringify(answerId)} />
+            <EditDeleteAction
+              type="answer"
+              itemId={JSON.stringify(answerId)}
+              clerkId={clerkId?.toString()}
+            />
           )}
         </SignedIn>
       </div>
