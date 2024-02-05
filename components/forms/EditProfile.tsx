@@ -183,14 +183,23 @@ const EditProfile = ({
             </FormItem>
           )}
         />
+        <div className="flex flex-row gap-6">
+          <Button
+            type="submit"
+            className="primary-gradient w-fit !text-light-900"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Editing" : "Edit Profile"}
+          </Button>
 
-        <Button
-          type="submit"
-          className="primary-gradient w-fit !text-light-900"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Editing" : "Edit Profile"}
-        </Button>
+          <Button
+            className="text-dark300_light700 w-fit border"
+            type="reset"
+            onClick={() => router.back()}
+          >
+            Cancel
+          </Button>
+        </div>
       </form>
     </Form>
   );

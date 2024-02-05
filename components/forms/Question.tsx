@@ -24,11 +24,12 @@ import { useTheme } from "@/context/ThemeProvider";
 
 interface Props {
   type?: string;
+  clerkId?: string;
   mongoUserId: string;
   questionDetails?: string;
 }
 
-const Question = ({ type, mongoUserId, questionDetails }: Props) => {
+const Question = ({ type, mongoUserId, questionDetails, clerkId }: Props) => {
   const { mode } = useTheme();
   const editorRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -259,17 +260,30 @@ const Question = ({ type, mongoUserId, questionDetails }: Props) => {
             </FormItem>
           )}
         />
-        <Button
-          type="submit"
-          className="primary-gradient w-fit !text-light-900"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <>{type === "edit" ? "Editing" : "Posting"}</>
-          ) : (
-            <>{type === "edit" ? "Edit Question" : "Ask Question"}</>
-          )}
-        </Button>
+        <div className="flex flex-row gap-6">
+          <Button
+            type="submit"
+            className="primary-gradient w-fit !text-light-900"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>{type === "edit" ? "Editing" : "Posting"}</>
+            ) : (
+              <>{type === "edit" ? "Edit Question" : "Ask Question"}</>
+            )}
+          </Button>
+          <Button
+            className="text-dark300_light700 w-fit border"
+            type="reset"
+            onClick={() => {
+              type === "edit"
+                ? router.push(`/profile/${clerkId}`)
+                : router.back();
+            }}
+          >
+            Cancel
+          </Button>
+        </div>
       </form>
     </Form>
   );
