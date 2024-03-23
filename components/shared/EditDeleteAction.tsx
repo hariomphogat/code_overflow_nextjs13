@@ -4,6 +4,7 @@ import { deleteAnswer } from "@/lib/actions/answer.action";
 import { deleteQuestion } from "@/lib/actions/question.action";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { toast } from "../ui/use-toast";
 
 interface Props {
   type: "question" | "answer";
@@ -18,20 +19,36 @@ const EditDeleteAction = ({ type, itemId, clerkId }: Props) => {
     router.push(`/question/edit/${JSON.parse(itemId)}`);
   };
   const handleDelete = async () => {
-    if (type === "question") {
-      // delte question
-      await deleteQuestion({
-        questionId: JSON.parse(itemId),
-        path: pathname,
-        clerkId,
+    try {
+      if (type === "question") {
+        // delte question
+        await deleteQuestion({
+          questionId: JSON.parse(itemId),
+          path: pathname,
+          clerkId,
+        });
+      } else if (type === "answer") {
+        // delete answer
+        await deleteAnswer({
+          answerId: JSON.parse(itemId),
+          path: pathname,
+          clerkId,
+        });
+      }
+      toast({
+        title: `${
+          type === "question" ? "Question" : "Answer"
+        } deleted Successfully`,
       });
-    } else if (type === "answer") {
-      // delete answer
-      await deleteAnswer({
-        answerId: JSON.parse(itemId),
-        path: pathname,
-        clerkId,
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: `Error occurred while deleting the ${
+          type === "question" ? "question" : "answer"
+        }`,
+        variant: "destructive",
       });
+      throw error;
     }
   };
 

@@ -21,6 +21,7 @@ import Image from "next/image";
 import { createQuestion, editQuestion } from "@/lib/actions/question.action";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "@/context/ThemeProvider";
+import { toast } from "../ui/use-toast";
 
 interface Props {
   type?: string;
@@ -112,8 +113,19 @@ const Question = ({ type, mongoUserId, questionDetails, clerkId }: Props) => {
         // navigate to homePage
         router.push("/");
       }
+      toast({
+        title: `Question ${
+          type === "edit" ? "updated" : "submit"
+        } successfully`,
+      });
     } catch (error: any) {
       console.log(error);
+      toast({
+        title: `Error while ${
+          type === "edit" ? "updating" : "submitting"
+        } the question`,
+        variant: "destructive",
+      });
       throw new Error(`error during submission:${error}`);
     } finally {
       setIsSubmitting(false);

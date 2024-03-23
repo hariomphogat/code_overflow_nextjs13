@@ -17,6 +17,7 @@ import { useState } from "react";
 import { Textarea } from "../ui/textarea";
 import { usePathname, useRouter } from "next/navigation";
 import { updateUser } from "@/lib/actions/user.action";
+import { toast } from "../ui/use-toast";
 
 interface params {
   clerkId: string;
@@ -69,8 +70,15 @@ const EditProfile = ({
       });
       // navigate to homePage
       router.push(`/profile/${clerkId}`);
+      toast({
+        title: "Profile Updated successfully",
+      });
     } catch (error: any) {
       console.log(error);
+      toast({
+        title: "Error occured while updating your profile",
+        variant: "destructive",
+      });
       throw new Error(`error during submission:${error}`);
     } finally {
       setIsSubmitting(false);
@@ -130,7 +138,7 @@ const EditProfile = ({
           render={({ field }) => (
             <FormItem className="flex w-full flex-col">
               <FormLabel className="paragraph-semibold text-dark400_light800">
-                portfolioWebsite Link
+                Portfolio Website Link
               </FormLabel>
               <FormControl className="mt-3.5">
                 <Input

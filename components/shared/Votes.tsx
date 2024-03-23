@@ -7,10 +7,10 @@ import {
 } from "@/lib/actions/question.action";
 import { saveQuestion } from "@/lib/actions/user.action";
 import { formatNumber } from "@/lib/utils";
-import { RedirectToSignIn } from "@clerk/nextjs";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "../ui/use-toast";
 
 interface Props {
   itemId: string;
@@ -39,8 +39,10 @@ const Votes = ({
   // handle votes
   const handleVote = async (action: string) => {
     if (!userId) {
-      <RedirectToSignIn />;
-      return;
+      return toast({
+        title: "Please log in",
+        description: "You must be logged in to perform this action",
+      });
     }
     if (action === "upvote") {
       if (type === "question") {
@@ -61,8 +63,11 @@ const Votes = ({
         });
       }
 
-      // TODO:show a toast message
-      return;
+      // show a toast message
+      return toast({
+        title: `${!hasUpvoted ? "Upvoted successfully" : "Upvote removed"}`,
+        variant: !hasUpvoted ? "default" : "destructive",
+      });
     }
 
     if (action === "downvote") {
@@ -83,19 +88,34 @@ const Votes = ({
           path: pathname,
         });
       }
+      return toast({
+        title: `${
+          !hasDownvoted ? "Downvoted successfully" : "Downvote removed"
+        }`,
+        variant: !hasDownvoted ? "default" : "destructive",
+      });
     }
   };
 
   // handle Save
   const handleSave = async () => {
     if (!userId) {
-      return router.push(`/sign-in?redirect=${encodeURIComponent(pathname)}`);
+      return toast({
+        title: "Please log in",
+        description: "You must be logged in to perform this action",
+      });
     }
     await saveQuestion({
       userId: JSON.parse(userId),
       questionId: JSON.parse(itemId),
       hasSaved,
       path: pathname,
+    });
+    return toast({
+      title: `Question ${
+        !hasSaved ? "saved in" : "removed from"
+      } your collection`,
+      variant: !hasSaved ? "default" : "destructive",
     });
   };
 

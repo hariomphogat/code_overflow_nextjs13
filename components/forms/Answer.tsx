@@ -17,6 +17,7 @@ import { Button } from "../ui/button";
 import Image from "next/image";
 import { redirect, usePathname } from "next/navigation";
 import { createAnswer } from "@/lib/actions/answer.action";
+import { toast } from "../ui/use-toast";
 
 interface params {
   question: string;
@@ -52,8 +53,16 @@ const Answer = ({ question, questionId, userId }: params) => {
         const editor = editorRef.current as any;
         editor.setContent("");
       }
+
+      toast({
+        title: "Answer submitted successfully",
+      });
     } catch (error) {
       console.log(error);
+      toast({
+        title: "Error while submitting the answer",
+        variant: "destructive",
+      });
       throw error;
     } finally {
       setIsSubmitting(false);
@@ -62,7 +71,11 @@ const Answer = ({ question, questionId, userId }: params) => {
 
   // generate an AI answer
   const generateAiAnswer = async () => {
-    if (!userId) return;
+    if (!userId)
+      return toast({
+        title: "Please log in",
+        description: "You must be logged in to perform this action",
+      });
     setIsSubmittingAI(true);
     try {
       const response = await fetch(
@@ -79,9 +92,17 @@ const Answer = ({ question, questionId, userId }: params) => {
         editor.setContent(formattedAnswer);
       }
 
-      // TODO: Toast...
+      toast({
+        title: "Successfully Generated!!",
+        description: "AI answer generated successfully",
+      });
     } catch (error) {
       console.log(error);
+      toast({
+        title: "Error",
+        description: " Error occurred while generating an AI answer.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmittingAI(false);
     }
