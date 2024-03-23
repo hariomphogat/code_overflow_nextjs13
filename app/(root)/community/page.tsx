@@ -14,6 +14,7 @@ export default async function Community({ searchParams }: SearchParamsProps) {
     page: searchParams.page ? +searchParams.page : 1,
     pageSize: 20,
   });
+
   return (
     <>
       <h1 className="h1-bold text-dark100_light900">All Users</h1>
