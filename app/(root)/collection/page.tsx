@@ -7,6 +7,14 @@ import { getSavedQuestions } from "@/lib/actions/user.action";
 import { auth, redirectToSignIn } from "@clerk/nextjs";
 import { SearchParamsProps } from "@/types";
 import Pagination from "@/components/shared/Pagination";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Collection | CodeOverflow",
+  description:
+    "Welcome to the Collection page of CodeOverflow . A collection of 1,000,000,000+ questions. Join us now.",
+};
+
 export default async function Collection({ searchParams }: SearchParamsProps) {
   const { userId } = auth();
   if (!userId) return redirectToSignIn;

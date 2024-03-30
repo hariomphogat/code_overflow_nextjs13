@@ -11,6 +11,13 @@ import Image from "next/image";
 import Link from "next/link";
 import QuestionTab from "@/components/shared/QuestionTab";
 import AnswerTab from "@/components/shared/AnswerTab";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Profile | CodeOverflow",
+  description:
+    "Welcome to the Profile page of CodeOverflow . A community of 100,000,000+ developers. Join us now.",
+};
 
 const page = async ({ params, searchParams }: URLProps) => {
   const { userId: clerkId } = auth();

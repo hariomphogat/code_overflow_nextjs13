@@ -6,6 +6,13 @@ import NoResult from "@/components/shared/NoResult";
 import Link from "next/link";
 import { SearchParamsProps } from "@/types";
 import Pagination from "@/components/shared/Pagination";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Tags | CodeOverflow",
+  description:
+    "Welcome to the Tags page of CodeOverflow . CodeOverflow is community of 100,000,000+ developers with a collection of 1,000,000,000+ questions. Join us now.",
+};
 
 export default async function Tags({ searchParams }: SearchParamsProps) {
   const result = await getAllTags({

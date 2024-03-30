@@ -3,6 +3,13 @@ import { getUserById } from "@/lib/actions/user.action";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import React from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Ask Question | CodeOverflow",
+  description:
+    "Welcome to the Ask Question page of CodeOverflow . CodeOverflow is community of 100,000,000+ developers. Ask a question now.",
+};
 
 const page = async () => {
   const { userId } = auth();

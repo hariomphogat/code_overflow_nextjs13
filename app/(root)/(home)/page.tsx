@@ -9,6 +9,13 @@ import NoResult from "@/components/shared/NoResult";
 import { getQuestions } from "@/lib/actions/question.action";
 import { SearchParamsProps } from "@/types";
 import Pagination from "@/components/shared/Pagination";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Home | CodeOverflow",
+  description:
+    "Welcome to the Collection page of CodeOverflow . A community of 100,000,000+ developers. Join us now.",
+};
 
 export default async function Home({ searchParams }: SearchParamsProps) {
   const result = await getQuestions({
