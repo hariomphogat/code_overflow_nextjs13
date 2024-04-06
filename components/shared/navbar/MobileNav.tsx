@@ -56,7 +56,6 @@ const NavContent = () => {
   );
 };
 const MobileNav = () => {
-  const year = new Date().getFullYear();
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -70,7 +69,7 @@ const MobileNav = () => {
       </SheetTrigger>
       <SheetContent
         side="left"
-        className="background-light900_dark200 border-none"
+        className="background-light900_dark200 no-scrollbar overflow-y-auto border-none"
       >
         <Link href="/" className="flex items-center gap-1">
           <Image
@@ -106,9 +105,6 @@ const MobileNav = () => {
             </div>
           </SignedOut>
         </div>
-        <p className="small-regular mt-2 items-center p-1 text-center text-gray-400 dark:text-gray-500 ">
-          &copy; {` Hariom Phogat ${year}`}
-        </p>
       </SheetContent>
     </Sheet>
   );
