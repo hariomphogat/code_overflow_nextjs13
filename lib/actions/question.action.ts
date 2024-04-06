@@ -50,7 +50,6 @@ export async function getQuestions(params: GetQuestionsParams) {
       case "unanswered":
         query.answers = { $size: 0 };
         break;
-      // TODO: add functionality for recommended.
       default:
         break;
     }

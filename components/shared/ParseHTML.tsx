@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-
+/* tslint:disable-next-line */
 import Prism from "prismjs";
 import parse from "html-react-parser";
 
