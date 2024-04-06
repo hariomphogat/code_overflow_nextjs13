@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 const LeftSidebar = () => {
   const pathname = usePathname();
   const { userId } = useAuth();
+  const year = new Date().getFullYear();
 
   return (
     <>
@@ -133,6 +134,9 @@ const LeftSidebar = () => {
             </Link>
           </div>
         </SignedOut>
+        <p className="small-regular mt-2 items-center p-1 text-center text-gray-400 dark:text-gray-500 ">
+          &copy; {` Hariom Phogat ${year}`}
+        </p>
       </section>
     </>
   );
