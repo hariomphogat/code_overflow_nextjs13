@@ -16,7 +16,6 @@ const page = async ({ params }: URLProps) => {
     questionId: JSON.stringify(questionId),
   });
   if (!question) {
-    console.log("question not found");
     return;
   }
   const author = JSON.stringify(question.author.id);
