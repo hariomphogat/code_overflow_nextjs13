@@ -38,7 +38,7 @@ export default async function Tags({ searchParams }: SearchParamsProps) {
           otherClasses="min-h-[56px] sm:min-w-[170px]"
         />
       </div>
-      <section className="mt-12 flex flex-wrap gap-4">
+      <section className="3xl:grid-cols-4 mt-12 grid grid-cols-2 gap-4 lg:grid-cols-3">
         {result.tags.length > 0 ? (
           result.tags.map((tag) => (
             <Link
@@ -46,9 +46,9 @@ export default async function Tags({ searchParams }: SearchParamsProps) {
               key={tag._id}
               className="shadow-light100_darknone"
             >
-              <article className="background-light900_dark200 light-border flex w-full flex-col rounded-2xl border px-8 py-10 sm:w-[260px]">
-                <div className="background-light800_dark400 w-fit rounded-sm px-5 py-1.5">
-                  <p className="paragraph-semibold text-dark300_light900">
+              <article className="background-light900_dark200 light-border flex min-w-[160px] flex-col rounded-2xl border px-5 py-7">
+                <div className="background-light800_dark400 w-full rounded-sm px-5 py-1.5">
+                  <p className="paragraph-semibold text-dark300_light900 line-clamp-1">
                     {tag.name}
                   </p>
                 </div>
