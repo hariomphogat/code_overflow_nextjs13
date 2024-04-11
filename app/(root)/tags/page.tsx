@@ -47,7 +47,7 @@ export default async function Tags({ searchParams }: SearchParamsProps) {
               className="shadow-light100_darknone"
             >
               <article className="background-light900_dark200 light-border flex min-w-[160px] flex-col rounded-2xl border px-5 py-7">
-                <div className="background-light800_dark400 w-full rounded-sm px-5 py-1.5">
+                <div className="background-light800_dark400 w-fit rounded-sm px-5 py-1.5">
                   <p className="paragraph-semibold text-dark300_light900 line-clamp-1">
                     {tag.name}
                   </p>

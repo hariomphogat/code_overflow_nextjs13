@@ -163,3 +163,33 @@ export const assignBadges = (params: BadgeParam) => {
   });
   return badgeCounts;
 };
+
+// capitalize  a variable
+interface LocationProps {
+  city?: string;
+  state?: string;
+  country?: string;
+}
+
+export function fullLocationName({ city, state, country }: LocationProps) {
+  let locationString = "";
+
+  if (city && city !== "null") {
+    locationString += city.charAt(0).toUpperCase() + city.slice(1) + ", ";
+  }
+
+  if (state && state !== "null") {
+    locationString += state.toUpperCase() + ", ";
+  }
+
+  if (country && country !== "null") {
+    locationString += country.toUpperCase();
+  }
+
+  // Remove trailing comma if present
+  if (locationString.endsWith(", ")) {
+    locationString = locationString.slice(0, -2);
+  }
+
+  return locationString;
+}

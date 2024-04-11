@@ -5,6 +5,9 @@ export default authMiddleware({
   publicRoutes: [
     "/",
     "/api/webhook/route",
+    "/api/ipclient",
+    "/api/country",
+    "/api/findjobs",
     "/question/:id",
     "/tags",
     "/tags/:id",
