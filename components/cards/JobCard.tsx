@@ -98,7 +98,7 @@ const JobCard = ({
                   textStyles="body-medium text-light-500"
                 />
               </div>
-              <Link href={job_link}>
+              <Link href={job_link} rel="noopener noreferrer" target="_blank">
                 <div className="body-regular flex items-center gap-3 max-sm:flex-wrap max-sm:justify-start">
                   <p className="text-primary-500">ViewJob</p>
                   <ArrowTopRightIcon
