@@ -7,6 +7,7 @@ export default authMiddleware({
     "/api/webhook/route",
     "/api/ipclient",
     "/api/country",
+    "/api/country/route",
     "/api/findjobs",
     "/question/:id",
     "/tags",
