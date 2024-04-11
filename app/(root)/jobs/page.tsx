@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import LocalSearchBar from "@/components/shared/search/LocalSearchBar";
 import { AllCountriesFilters } from "@/constants/filters";
 import NoResult from "@/components/shared/NoResult";
@@ -6,7 +7,6 @@ import Pagination from "@/components/shared/Pagination";
 import type { Metadata } from "next";
 import JobCard from "@/components/cards/JobCard";
 import LocationFilter from "@/components/shared/LocationFilter";
-import GetJobs from "@/app/api/findjobs/route";
 // import GetJobs from "@/app/api/findjobs/route";
 
 export const metadata: Metadata = {
@@ -17,20 +17,27 @@ export const metadata: Metadata = {
 
 export default async function Jobs({ searchParams }: SearchParamsProps) {
   // fetch client Country
-  const ipApiUrl = process.env.NEXT_PUBLIC_SERVER_URL + "/api/country" || "";
+  const ipApiUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/country` || "";
   const clientData = await fetch(ipApiUrl, { method: "GET" }).then((res) => {
     return res.json();
   });
   const clientCountry = clientData.clientCountryData.country;
 
-  // fetch jobs from api route
-  const result = await GetJobs({
-    location: searchParams?.location || clientCountry || "india",
-    page: searchParams?.page,
-    query: searchParams?.q,
-  });
+  const location = searchParams?.location;
+  const page = searchParams?.page || "1";
+  const job_titles = searchParams?.q;
 
-  // const result: any = [];
+  const jobsLocation = location || clientCountry || "india";
+
+  let jobsApiUrl;
+  // fetch jobs data
+  if (job_titles) {
+    jobsApiUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/findjobs?location=${encodeURIComponent(jobsLocation)}&page=${page}&job_titles=${encodeURIComponent(job_titles)}`;
+  } else {
+    jobsApiUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/findjobs?location=${encodeURIComponent(jobsLocation)}&page=${page}`;
+  }
+  const response = await fetch(jobsApiUrl);
+  const result = await response.json();
   return (
     <>
       <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">

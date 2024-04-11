@@ -66,7 +66,7 @@ const LocalSearchBar = ({
       <Input
         type="text"
         placeholder={placeholder}
-        value={search!}
+        value={search! || ""}
         onChange={(e) => {
           setSearch(e.target.value);
         }}
