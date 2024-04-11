@@ -12,7 +12,7 @@ const Pagination = ({ pageNumber, isNext }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  if (pageNumber === 1 && isNext === false) return null;
+  if (pageNumber === 1 && isNext === false) return;
 
   const handleNavigation = (direction: string) => {
     const nextPageNumber =
