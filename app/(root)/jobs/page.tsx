@@ -21,7 +21,7 @@ export default async function Jobs({ searchParams }: SearchParamsProps) {
   const clientData = await fetch(ipApiUrl, { method: "GET" }).then((res) => {
     return res.json();
   });
-  const clientCountry = clientData.clientCountryData.country;
+  const clientCountry = clientData?.clientCountryData?.country;
 
   const location = searchParams?.location;
   const page = searchParams?.page || "1";
