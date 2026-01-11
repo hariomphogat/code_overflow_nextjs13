@@ -1,0 +1,15 @@
+[33mcommit 695f5d66d4dbc7000c348a710d3607ee99f7324a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Merge: ce344b7 0537c41
+Author: HARIOM PHOGAT <106862949+hariomphogat@users.noreply.github.com>
+Date:   Sun Jan 11 14:04:11 2026 +0530
+
+    Merge pull request #1 from hariomphogat/nextjs16
+    
+    Feat:upgrade to Nextjs16, openRouter api integration
+
+[33mcommit 40108ef96f53529e62ec4a9b708d3f446964468e[m
+Merge: 0eb6582 8bafb29
+Author: hariomphogat <hariom9728034346@gmail.com>
+Date:   Sat Apr 6 23:35:36 2024 +0530
+
+    pull from upgrade-packages

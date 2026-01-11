@@ -45,11 +45,14 @@ export default async function Page(props: {
     if (!mongoUser) {
       const clerkUser = await currentUser();
       if (clerkUser) {
+        const email = clerkUser.emailAddresses?.length > 0
+          ? clerkUser.emailAddresses[0].emailAddress
+          : `${clerkUser.id}@placeholder.local`;
         mongoUser = await createUser({
           clerkId: userId,
           name: `${clerkUser.firstName} ${clerkUser.lastName || ""}`,
           username: clerkUser.username || `user_${clerkUser.id.substring(0, 5)}`,
-          email: clerkUser.emailAddresses[0].emailAddress,
+          email,
           picture: clerkUser.imageUrl,
         });
       }
