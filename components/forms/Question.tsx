@@ -114,16 +114,14 @@ const Question = ({ type, mongoUserId, questionDetails, clerkId }: Props) => {
         router.push("/");
       }
       toast({
-        title: `Question ${
-          type === "edit" ? "updated" : "submit"
-        } successfully`,
+        title: `Question ${type === "edit" ? "updated" : "submit"
+          } successfully`,
       });
     } catch (error: any) {
       console.log(error);
       toast({
-        title: `Error while ${
-          type === "edit" ? "updating" : "submitting"
-        } the question`,
+        title: `Error while ${type === "edit" ? "updating" : "submitting"
+          } the question`,
         variant: "destructive",
       });
       throw new Error(`error during submission:${error}`);
@@ -174,12 +172,12 @@ const Question = ({ type, mongoUserId, questionDetails, clerkId }: Props) => {
               <FormControl className="mt-3.5">
                 <Editor
                   apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_API_KEY}
-                  onInit={(evt, editor) => {
+                  onInit={(evt: any, editor: any) => {
                     // @ts-ignore
                     editorRef.current = editor;
                   }}
                   onBlur={field.onBlur}
-                  onEditorChange={(content) => field.onChange(content)}
+                  onEditorChange={(content: any) => field.onChange(content)}
                   initialValue={parsedQuestionDetails.content || ""}
                   init={{
                     height: 500,
@@ -229,7 +227,7 @@ const Question = ({ type, mongoUserId, questionDetails, clerkId }: Props) => {
                 Tags<span className="text-primary-500">*</span>
               </FormLabel>
               <FormControl className="mt-3.5">
-                <>
+                <div>
                   <Input
                     disabled={type === "edit"}
                     placeholder="Add tags..."
@@ -245,7 +243,7 @@ const Question = ({ type, mongoUserId, questionDetails, clerkId }: Props) => {
                           onClick={() =>
                             type !== "edit"
                               ? handleTagRemove(tag, field)
-                              : () => {}
+                              : () => { }
                           }
                         >
                           {tag}
@@ -262,7 +260,7 @@ const Question = ({ type, mongoUserId, questionDetails, clerkId }: Props) => {
                       ))}
                     </div>
                   )}
-                </>
+                </div>
               </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">
                 Add upto 3 tags to describe what your question is about. You

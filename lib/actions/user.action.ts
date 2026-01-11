@@ -16,7 +16,7 @@ import {
 import Question from "../models/question.model";
 import Tag from "../models/tag.model";
 import Answer from "../models/answer.model";
-import { FilterQuery } from "mongoose";
+import mongoose from "mongoose";
 import { BadgeCriteriaType } from "@/types";
 import { assignBadges } from "../utils";
 
@@ -101,11 +101,15 @@ export async function getAllUsers(params: GetAllUsersParams) {
   try {
     connectToDatabase();
     const { searchQuery, filter, page = 1, pageSize = 20 } = params;
-    const query: FilterQuery<typeof User> = {};
+    const query: any = {};
     if (searchQuery) {
+      const escapedSearchQuery = searchQuery.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&"
+      );
       query.$or = [
-        { name: { $regex: new RegExp(searchQuery, "i") } },
-        { username: { $regex: new RegExp(searchQuery, "i") } },
+        { name: { $regex: new RegExp(escapedSearchQuery, "i") } },
+        { username: { $regex: new RegExp(escapedSearchQuery, "i") } },
       ];
     }
     let sortOptions = {};
@@ -182,11 +186,17 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
     connectToDatabase();
     const { clerkId, filter, page = 1, pageSize = 20, searchQuery } = params;
 
-    const query: FilterQuery<typeof Question> = searchQuery
-      ? [
-          { title: { $regex: new RegExp(searchQuery, "i") } },
-          { content: { $regex: new RegExp(searchQuery, "i") } },
-        ]
+    const query: any = searchQuery
+      ? (() => {
+        const escapedSearchQuery = searchQuery.replace(
+          /[.*+?^${}()|[\]\\]/g,
+          "\\$&"
+        );
+        return [
+          { title: { $regex: new RegExp(escapedSearchQuery, "i") } },
+          { content: { $regex: new RegExp(escapedSearchQuery, "i") } },
+        ];
+      })()
       : {};
 
     let sortOptions = {};
@@ -237,11 +247,11 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
         sort: sortOptions,
       },
     });
-    const isNext = nextQue.saved.length > 0;
-
     if (!user) {
       throw new Error("User not found!");
     }
+    const isNext = nextQue?.saved?.length > 0;
+
     const savedQuestions = user.saved;
 
     return { questions: savedQuestions, isNext };

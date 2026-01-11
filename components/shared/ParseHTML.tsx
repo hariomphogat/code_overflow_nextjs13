@@ -34,7 +34,11 @@ const ParseHTML = ({ data }: Props) => {
   useEffect(() => {
     Prism.highlightAll();
   }, []);
-  return <div className={`markdown w-full min-w-full`}>{parse(data)}</div>;
+
+  // Fix hydration issues by preventing <pre> inside <p>
+  const cleanData = data.replace(/<p>\s*(<pre\b[\s\S]*?<\/pre>)\s*<\/p>/gi, "$1");
+
+  return <div className={`markdown w-full min-w-full`}>{parse(cleanData)}</div>;
 };
 
 export default ParseHTML;

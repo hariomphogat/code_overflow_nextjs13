@@ -1,6 +1,6 @@
 "use server";
 
-import { FilterQuery } from "mongoose";
+import mongoose from "mongoose";
 import Question from "../models/question.model";
 import Tag, { ITag } from "../models/tag.model";
 import User from "../models/user.model";
@@ -37,8 +37,14 @@ export async function getAllTags(params: GetAllTagsParams) {
   try {
     connectToDatabase();
     const { searchQuery, filter, page = 1, pageSize = 20 } = params;
-    const query: FilterQuery<typeof Tag> = searchQuery
-      ? { name: { $regex: new RegExp(searchQuery, "i") } }
+    const query: any = searchQuery
+      ? (() => {
+        const escapedSearchQuery = searchQuery.replace(
+          /[.*+?^${}()|[\]\\]/g,
+          "\\$&"
+        );
+        return { name: { $regex: new RegExp(escapedSearchQuery, "i") } };
+      })()
       : {};
 
     let sortOptions = {};
@@ -81,7 +87,7 @@ export async function getQuestionsByTagId(params: GetQuestionsByTagIdParams) {
   try {
     connectToDatabase();
     const { tagId, searchQuery, filter, page = 1, pageSize = 20 } = params;
-    const tagFilter: FilterQuery<ITag> = { _id: tagId };
+    const tagFilter: any = { _id: tagId };
 
     let sortOptions = {};
     let matchOptions = {};
@@ -108,11 +114,11 @@ export async function getQuestionsByTagId(params: GetQuestionsByTagIdParams) {
         ...matchOptions,
         ...(searchQuery
           ? {
-              $or: [
-                { title: { $regex: new RegExp(searchQuery, "i") } },
-                { content: { $regex: new RegExp(searchQuery, "i") } },
-              ],
-            }
+            $or: [
+              { title: { $regex: new RegExp(searchQuery, "i") } },
+              { content: { $regex: new RegExp(searchQuery, "i") } },
+            ],
+          }
           : {}),
       },
       options: {
@@ -143,11 +149,11 @@ export async function getQuestionsByTagId(params: GetQuestionsByTagIdParams) {
         ...matchOptions,
         ...(searchQuery
           ? {
-              $or: [
-                { title: { $regex: new RegExp(searchQuery, "i") } },
-                { content: { $regex: new RegExp(searchQuery, "i") } },
-              ],
-            }
+            $or: [
+              { title: { $regex: new RegExp(searchQuery, "i") } },
+              { content: { $regex: new RegExp(searchQuery, "i") } },
+            ],
+          }
           : {}),
       },
       options: {

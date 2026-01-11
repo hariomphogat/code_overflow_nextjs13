@@ -5,7 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getUserInfo } from "@/lib/actions/user.action";
 import { getJoinDate } from "@/lib/utils";
 import { URLProps } from "@/types";
-import { SignedIn, auth } from "@clerk/nextjs";
+import { SignedIn } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import Stats from "@/components/shared/Stats";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,14 +14,18 @@ import QuestionTab from "@/components/shared/QuestionTab";
 import AnswerTab from "@/components/shared/AnswerTab";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Profile | CodeOverflow",
   description:
     "Welcome to the Profile page of CodeOverflow . A community of 100,000,000+ developers. Join us now.",
 };
 
-const page = async ({ params, searchParams }: URLProps) => {
-  const { userId: clerkId } = auth();
+const page = async (props: URLProps) => {
+  const params = await props.params;
+  const searchParams = await props.searchParams;
+  const { userId: clerkId } = await auth();
   const userInfo = await getUserInfo({
     clerkId: JSON.parse(JSON.stringify(params.id)),
   });

@@ -26,6 +26,7 @@ export async function GET(req: NextRequest) {
       "X-RapidAPI-Key": process.env.RAPIDAPI_KEY,
       "X-RapidAPI-Host": "jsearch.p.rapidapi.com",
     },
+    timeout: 5000, // 5 seconds timeout
   };
 
   // call Api to fetch jobs based on option query
@@ -34,8 +35,11 @@ export async function GET(req: NextRequest) {
     const data = response.data.data;
     // console.log(data);
     return NextResponse.json(data);
-  } catch (error) {
-    console.error("Error while fetching the data:", error);
-    throw error;
+  } catch (error: any) {
+    console.error("Error while fetching the data:", error.message);
+    if (error.code === 'ECONNABORTED') {
+      return NextResponse.json({ error: "Request timed out" }, { status: 504 });
+    }
+    return NextResponse.json({ error: "Failed to fetch jobs" }, { status: 500 });
   }
 }

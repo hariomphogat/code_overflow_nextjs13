@@ -13,7 +13,9 @@ import {
 import { SearchParamsProps } from "@/types";
 import Pagination from "@/components/shared/Pagination";
 import type { Metadata } from "next";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Home | CodeOverflow",
@@ -21,8 +23,9 @@ export const metadata: Metadata = {
     "Welcome to the Collection page of CodeOverflow . A community of 100,000,000+ developers. Join us now.",
 };
 
-export default async function Home({ searchParams }: SearchParamsProps) {
-  const { userId } = auth();
+export default async function Home(props: SearchParamsProps) {
+  const searchParams = await props.searchParams;
+  const { userId } = await auth();
 
   let result;
 

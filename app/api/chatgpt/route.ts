@@ -3,14 +3,16 @@ import { NextResponse } from "next/server";
 export const POST = async (request: Request) => {
   const { question } = await request.json();
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "HTTP-Referer": `${process.env.NEXT_PUBLIC_SERVER_URL}`, // Optional, for including your app on openrouter.ai rankings.
+        "X-Title": "CodeOverflow", // Optional. Shows in rankings on openrouter.ai.
       },
       body: JSON.stringify({
-        model: "gpt-3.5-turbo",
+        model: "google/gemini-2.0-flash-exp:free",
         messages: [
           {
             role: "system",
@@ -26,10 +28,22 @@ export const POST = async (request: Request) => {
     });
 
     const responseData = await response.json();
+
+    if (!response.ok) {
+      console.error("OpenRouter API Error:", responseData);
+      throw new Error(responseData.error?.message || "Failed to fetch AI response");
+    }
+
+    if (!responseData.choices || !responseData.choices[0] || !responseData.choices[0].message) {
+      console.error("Invalid OpenRouter Response:", responseData);
+      throw new Error("Invalid response format from AI provider");
+    }
+
     const reply = responseData.choices[0].message.content;
 
     return NextResponse.json({ reply });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message });
+    console.error("AI Generation Error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 };
