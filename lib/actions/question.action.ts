@@ -14,7 +14,7 @@ import {
   QuestionVoteParams,
   RecommendedParams,
 } from "./shared.types";
-import mongoose, { Types } from "mongoose";
+import { FilterQuery, Types } from "mongoose";
 import Answer from "../models/answer.model";
 import Interaction from "../models/interaction.model";
 
@@ -27,7 +27,7 @@ export async function getQuestions(params: GetQuestionsParams) {
     // calculate the number of posts to skip based on the page number and page size
     const skipAmount = (page - 1) * pageSize;
 
-    const query: any = {};
+    const query: FilterQuery<typeof Question> = {};
     if (searchQuery) {
       const escapedSearchQuery = searchQuery.replace(
         /[.*+?^${}()|[\]\\]/g,
@@ -146,7 +146,7 @@ export async function getQuestionById(params: GetQuestionByIdParams) {
   try {
     connectToDatabase();
     const { questionId } = params;
-    const questionObjectId = new Types.ObjectId(questionId);
+    const questionObjectId = new Types.ObjectId(JSON.parse(questionId));
     const question = Question.findById({ _id: questionObjectId })
       .populate({ path: "tags", model: Tag, select: "_id name" })
       .populate({
@@ -201,15 +201,15 @@ export async function upvoteQuestion(params: QuestionVoteParams) {
     // Add Interaction
     !hasupVoted
       ? await Interaction.create({
-        user: userId,
-        action: "upvote_question",
-        question: questionId,
-        tags: question.tags,
-      })
+          user: userId,
+          action: "upvote_question",
+          question: questionId,
+          tags: question.tags,
+        })
       : await Interaction.deleteOne({
-        question: questionId,
-        action: "upvote_question",
-      });
+          question: questionId,
+          action: "upvote_question",
+        });
 
     hasdownVoted &&
       (await Interaction.deleteOne({
@@ -270,15 +270,15 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
     // Add Interaction
     !hasdownVoted
       ? await Interaction.create({
-        user: userId,
-        action: "downvote_question",
-        question: questionId,
-        tags: question.tags,
-      })
+          user: userId,
+          action: "downvote_question",
+          question: questionId,
+          tags: question.tags,
+        })
       : await Interaction.deleteOne({
-        question: questionId,
-        action: "downvote_question",
-      });
+          question: questionId,
+          action: "downvote_question",
+        });
 
     hasupVoted &&
       (await Interaction.deleteOne({
@@ -384,7 +384,7 @@ export async function getRecommendedQuestions(params: RecommendedParams) {
       )
     );
     console.log("userTags is:", distinctUserTagIds);
-    const query: any = {
+    const query: FilterQuery<typeof Question> = {
       $and: [
         { tags: { $in: distinctUserTagIds } }, // questions with user's tags
         { author: { $ne: user._id } }, // Exclude user's own questions

@@ -11,12 +11,7 @@ import { URLProps } from "@/types";
 // import { getQuestionsByTagId } from "@/lib/actions/tag.actions";
 import { isValidObjectId } from "mongoose";
 
-export const dynamic = "force-dynamic";
-
-export default async function Page(props: URLProps) {
-  const params = await props.params;
-  const searchParams = await props.searchParams;
-
+export default async function Page({ params, searchParams }: URLProps) {
   if (!isValidObjectId(params.id))
     return (
       <NoResult

@@ -9,21 +9,18 @@ import { getQuestionById } from "@/lib/actions/question.action";
 import { getUserById } from "@/lib/actions/user.action";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
 
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs";
 import { isValidObjectId } from "mongoose";
 import Image from "next/image";
 import Link from "next/link";
-import { createUser } from "@/lib/actions/user.action";
 
-export const dynamic = "force-dynamic";
-
-export default async function Page(props: {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<any>;
+export default async function Page({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: any;
 }) {
-  const params = await props.params;
-  const searchParams = await props.searchParams;
-
   if (!isValidObjectId(params.id))
     return (
       <NoResult
@@ -34,30 +31,16 @@ export default async function Page(props: {
       />
     );
 
-  const { userId } = await auth();
+  const { userId } = auth();
 
   let mongoUser;
 
   if (userId) {
     mongoUser = await getUserById({ clerkId: userId });
-
-    // Sync User if missing from DB
-    if (!mongoUser) {
-      const clerkUser = await currentUser();
-      if (clerkUser) {
-        mongoUser = await createUser({
-          clerkId: userId,
-          name: `${clerkUser.firstName} ${clerkUser.lastName || ""}`,
-          username: clerkUser.username || `user_${clerkUser.id.substring(0, 5)}`,
-          email: clerkUser.emailAddresses[0].emailAddress,
-          picture: clerkUser.imageUrl,
-        });
-      }
-    }
   }
 
   const question = await getQuestionById({
-    questionId: params.id,
+    questionId: JSON.stringify(params.id),
   });
 
   if (!question)
