@@ -16,7 +16,7 @@ import User from "../models/user.model";
 // create an answer
 export async function createAnswer(params: CreateAnswerParams) {
   try {
-    connectToDatabase();
+    await connectToDatabase();
     const { author, question, content, path } = params;
     const newAnswer = await Answer.create({
       author,
@@ -49,7 +49,7 @@ export async function createAnswer(params: CreateAnswerParams) {
 // get all answers by questionId
 export async function getAnswers(params: GetAnswersParams) {
   try {
-    connectToDatabase();
+    await connectToDatabase();
     const { questionId, sortBy, page = 1, pageSize = 10 } = params;
 
     let sortOptions = {};
@@ -97,7 +97,7 @@ export async function upvoteAnswer(params: AnswerVoteParams) {
       return;
     }
     isUpvoting = true;
-    connectToDatabase();
+    await connectToDatabase();
     const { answerId, userId, hasupVoted, hasdownVoted, path } = params;
 
     let updateQuery = {};
@@ -123,16 +123,16 @@ export async function upvoteAnswer(params: AnswerVoteParams) {
     // Add Interaction
     !hasupVoted
       ? await Interaction.create({
-          user: userId,
-          action: "upvote_answer",
-          question: answer.question,
-          answer: answerId,
-          tags: answer.question.tags,
-        })
+        user: userId,
+        action: "upvote_answer",
+        question: answer.question,
+        answer: answerId,
+        tags: answer.question.tags,
+      })
       : await Interaction.deleteOne({
-          answer: answerId,
-          action: "upvote_answer",
-        });
+        answer: answerId,
+        action: "upvote_answer",
+      });
 
     hasdownVoted &&
       (await Interaction.deleteOne({
@@ -167,7 +167,7 @@ export async function downvoteAnswer(params: AnswerVoteParams) {
       return;
     }
     isDownvoting = true;
-    connectToDatabase();
+    await connectToDatabase();
     const { answerId, userId, hasupVoted, hasdownVoted, path } = params;
     let updateQuery = {};
     if (hasdownVoted) {
@@ -192,16 +192,16 @@ export async function downvoteAnswer(params: AnswerVoteParams) {
     // Add Interaction
     !hasdownVoted
       ? await Interaction.create({
-          user: userId,
-          action: "downvote_answer",
-          question: answer.question,
-          answer: answerId,
-          tags: answer.question.tags,
-        })
+        user: userId,
+        action: "downvote_answer",
+        question: answer.question,
+        answer: answerId,
+        tags: answer.question.tags,
+      })
       : await Interaction.deleteOne({
-          answer: answerId,
-          action: "downvote_answer",
-        });
+        answer: answerId,
+        action: "downvote_answer",
+      });
 
     hasupVoted &&
       (await Interaction.deleteOne({
@@ -229,7 +229,7 @@ export async function downvoteAnswer(params: AnswerVoteParams) {
 // Delete an answer
 export async function deleteAnswer(params: DeleteAnswerParams) {
   try {
-    connectToDatabase();
+    await connectToDatabase();
     const { answerId, path, clerkId } = params;
     const answer = await Answer.findById(answerId);
     if (!answer) {
