@@ -37,6 +37,23 @@ export default async function Page({
 
   if (userId) {
     mongoUser = await getUserById({ clerkId: userId });
+
+    // Sync User if missing from DB
+    if (!mongoUser) {
+      const clerkUser = await currentUser();
+      if (clerkUser) {
+        const email = clerkUser.emailAddresses?.length > 0
+          ? clerkUser.emailAddresses[0].emailAddress
+          : `${clerkUser.id}@placeholder.local`;
+        mongoUser = await createUser({
+          clerkId: userId,
+          name: `${clerkUser.firstName} ${clerkUser.lastName || ""}`,
+          username: clerkUser.username || `user_${clerkUser.id.substring(0, 5)}`,
+          email,
+          picture: clerkUser.imageUrl,
+        });
+      }
+    }
   }
 
   const question = await getQuestionById({

@@ -30,19 +30,26 @@ const LocalSearchBar = ({
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (search) {
-        const newUrl = formUrlQuery({
-          params: searchParams.toString(),
-          key: "q",
-          value: search,
-        });
-        router.push(newUrl, { scroll: false });
+        if (search !== query) {
+          const newUrl = formUrlQuery({
+            params: searchParams.toString(),
+            key: "q",
+            value: search,
+          });
+          // Only push if URL actually changed
+          if (newUrl !== `${pathname}?${searchParams.toString()}` && newUrl !== pathname) {
+            router.push(newUrl, { scroll: false });
+          }
+        }
       } else {
         if (pathname === route) {
           const newUrl = removeKeysFromQuery({
             params: searchParams.toString(),
             keysToRemove: ["q"],
           });
-          router.push(newUrl, { scroll: false });
+          if (newUrl !== `${pathname}?${searchParams.toString()}`) {
+            router.push(newUrl, { scroll: false });
+          }
         }
       }
     }, 600);
