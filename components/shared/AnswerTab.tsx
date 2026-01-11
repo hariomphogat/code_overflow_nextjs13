@@ -5,8 +5,7 @@ import NoResult from "./NoResult";
 import AnswerCard from "../cards/AnswerCard";
 import Pagination from "./Pagination";
 
-interface Props {
-  searchParams: { [key: string]: string | undefined };
+interface Props extends SearchParamsProps {
   userId: string;
   clerkId?: string;
 }

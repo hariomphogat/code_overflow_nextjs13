@@ -85,7 +85,6 @@ const Answer = ({ question, questionId, userId }: params) => {
           body: JSON.stringify({ question }),
         }
       );
-      if (!response.ok) throw new Error(await response.text());
       const aiAnswer = await response.json();
       const formattedAnswer = aiAnswer.reply.replace(/\n/g, "<br />");
       if (editorRef.current) {
@@ -147,12 +146,12 @@ const Answer = ({ question, questionId, userId }: params) => {
                 <FormControl className="mt-3.5">
                   <Editor
                     apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_API_KEY}
-                    onInit={(evt: any, editor: any) => {
+                    onInit={(evt, editor) => {
                       // @ts-ignore
                       editorRef.current = editor;
                     }}
                     onBlur={field.onBlur}
-                    onEditorChange={(content: any) => field.onChange(content)}
+                    onEditorChange={(content) => field.onChange(content)}
                     init={{
                       height: 500,
                       menubar: false,

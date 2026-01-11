@@ -3,13 +3,11 @@ import LocalSearchBar from "@/components/shared/search/LocalSearchBar";
 import { QuestionFilters } from "@/constants/filters";
 import QuestionCard from "@/components/cards/QuestionCard";
 import NoResult from "@/components/shared/NoResult";
-import { getSavedQuestions, getUserById, createUser } from "@/lib/actions/user.action";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { getSavedQuestions } from "@/lib/actions/user.action";
+import { auth, redirectToSignIn } from "@clerk/nextjs";
 import { SearchParamsProps } from "@/types";
 import Pagination from "@/components/shared/Pagination";
 import type { Metadata } from "next";
-
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Collection | CodeOverflow",
@@ -17,28 +15,9 @@ export const metadata: Metadata = {
     "Welcome to the Collection page of CodeOverflow . A collection of 1,000,000,000+ questions. Join us now.",
 };
 
-export default async function Collection(props: SearchParamsProps) {
-  const searchParams = await props.searchParams;
-  const { userId, redirectToSignIn } = await auth();
-  if (!userId) return redirectToSignIn();
-
-  // Ensure user exists in MongoDB
-  let mongoUser = await getUserById({ clerkId: userId });
-  if (!mongoUser) {
-    const clerkUser = await currentUser();
-    if (clerkUser) {
-      const email = clerkUser.emailAddresses?.length > 0
-        ? clerkUser.emailAddresses[0].emailAddress
-        : `${clerkUser.id}@placeholder.local`;
-      mongoUser = await createUser({
-        clerkId: userId,
-        name: `${clerkUser.firstName} ${clerkUser.lastName || ""}`,
-        username: clerkUser.username || `user_${clerkUser.id.substring(0, 5)}`,
-        email,
-        picture: clerkUser.imageUrl,
-      });
-    }
-  }
+export default async function Collection({ searchParams }: SearchParamsProps) {
+  const { userId } = auth();
+  if (!userId) return redirectToSignIn;
 
   const result = await getSavedQuestions({
     clerkId: userId,

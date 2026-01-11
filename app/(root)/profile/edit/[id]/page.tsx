@@ -1,14 +1,11 @@
 import EditProfile from "@/components/forms/EditProfile";
 import { getUserById } from "@/lib/actions/user.action";
 import { URLProps } from "@/types";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs";
 import React from "react";
 
-export const dynamic = "force-dynamic";
-
-const page = async (props: URLProps) => {
-  const params = await props.params;
-  const { userId } = await auth();
+const page = async ({ params }: URLProps) => {
+  const { userId } = auth();
   if (!userId) return;
   const mongoUser = await getUserById({ clerkId: userId });
   if (!mongoUser) return;

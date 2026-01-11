@@ -1,11 +1,9 @@
 import Question from "@/components/forms/Question";
 import { getUserById } from "@/lib/actions/user.action";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import React from "react";
 import type { Metadata } from "next";
-
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Ask Question | CodeOverflow",
@@ -14,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 const page = async () => {
-  const { userId } = await auth();
+  const { userId } = auth();
 
   if (!userId) redirect("/sign-in");
   const mongoUser = await getUserById({ clerkId: userId });

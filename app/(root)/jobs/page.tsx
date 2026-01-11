@@ -5,9 +5,6 @@ import NoResult from "@/components/shared/NoResult";
 import { SearchParamsProps } from "@/types";
 import Pagination from "@/components/shared/Pagination";
 import type { Metadata } from "next";
-
-export const dynamic = "force-dynamic";
-
 import JobCard from "@/components/cards/JobCard";
 import LocationFilter from "@/components/shared/LocationFilter";
 // import GetJobs from "@/app/api/findjobs/route";
@@ -18,7 +15,7 @@ export const metadata: Metadata = {
     "Welcome to the Jobs page of CodeOverflow where you can find jobs.",
 };
 
-export default async function Jobs(props: SearchParamsProps) {
+export default async function Jobs({ searchParams }: SearchParamsProps) {
   // fetch client Country
   const ipApiUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/country` || "";
   const clientData = await fetch(ipApiUrl, { method: "GET" }).then((res) => {
@@ -26,7 +23,6 @@ export default async function Jobs(props: SearchParamsProps) {
   });
   const clientCountry = await clientData?.clientCountryData?.country;
 
-  const searchParams = await props.searchParams;
   const location = searchParams?.location;
   const page = searchParams?.page || "1";
   const job_titles = searchParams?.q;
