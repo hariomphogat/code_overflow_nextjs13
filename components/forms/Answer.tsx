@@ -86,6 +86,16 @@ const Answer = ({ question, questionId, userId }: params) => {
         }
       );
       const aiAnswer = await response.json();
+
+      // Check if API returned an error
+      if (aiAnswer.error) {
+        throw new Error(aiAnswer.error);
+      }
+
+      if (!aiAnswer.reply) {
+        throw new Error("No reply received from AI");
+      }
+
       const formattedAnswer = aiAnswer.reply.replace(/\n/g, "<br />");
       if (editorRef.current) {
         const editor = editorRef.current as any;
