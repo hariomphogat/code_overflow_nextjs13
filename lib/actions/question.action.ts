@@ -21,7 +21,7 @@ import Interaction from "../models/interaction.model";
 // get all questions
 export async function getQuestions(params: GetQuestionsParams) {
   try {
-    connectToDatabase();
+    await connectToDatabase();
 
     const { searchQuery, filter, page = 1, pageSize = 20 } = params;
     // calculate the number of posts to skip based on the page number and page size
@@ -73,7 +73,7 @@ export async function getQuestions(params: GetQuestionsParams) {
 //  create a question
 export async function createQuestion(params: CreateQuestionParams) {
   try {
-    connectToDatabase();
+    await connectToDatabase();
 
     const { title, content, tags, author, path } = params;
 
@@ -121,7 +121,7 @@ export async function createQuestion(params: CreateQuestionParams) {
 //  edit a question
 export async function editQuestion(params: EditQuestionParams) {
   try {
-    connectToDatabase();
+    await connectToDatabase();
 
     const { questionId, title, content, path } = params;
 
@@ -144,7 +144,7 @@ export async function editQuestion(params: EditQuestionParams) {
 // get question details
 export async function getQuestionById(params: GetQuestionByIdParams) {
   try {
-    connectToDatabase();
+    await connectToDatabase();
     const { questionId } = params;
     const questionObjectId = new Types.ObjectId(questionId);
     const question = Question.findById({ _id: questionObjectId })
@@ -173,7 +173,7 @@ export async function upvoteQuestion(params: QuestionVoteParams) {
 
     isUpvoting = true;
 
-    connectToDatabase();
+    await connectToDatabase();
     const { questionId, userId, hasupVoted, hasdownVoted, path } = params;
 
     let updateQuery = {};
@@ -245,7 +245,7 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
     }
     isDownvoting = true;
 
-    connectToDatabase();
+    await connectToDatabase();
     const { questionId, userId, hasupVoted, hasdownVoted, path } = params;
 
     let updateQuery = {};
@@ -306,7 +306,7 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
 // Delete a question
 export async function deleteQuestion(params: DeleteQuestionParams) {
   try {
-    connectToDatabase();
+    await connectToDatabase();
     const { questionId, path, clerkId } = params;
     const question = await Question.findById(questionId);
     if (!question) {
@@ -336,7 +336,7 @@ export async function deleteQuestion(params: DeleteQuestionParams) {
 // get popular questions
 export async function getHotQuestions() {
   try {
-    connectToDatabase();
+    await connectToDatabase();
     const hotQuestions = await Question.find({})
       .sort({ views: -1, upvotes: -1 })
       .limit(5);
