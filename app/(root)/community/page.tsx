@@ -8,13 +8,16 @@ import { SearchParamsProps } from "@/types";
 import Pagination from "@/components/shared/Pagination";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Community | CodeOverflow",
   description:
     "Welcome to the Community page of CodeOverflow . CodeOverflow is community of 100,000,000+ developers. Join us now.",
 };
 
-export default async function Community({ searchParams }: SearchParamsProps) {
+export default async function Community(props: SearchParamsProps) {
+  const searchParams = await props.searchParams;
   const result = await getAllUsers({
     searchQuery: searchParams.q,
     filter: searchParams.filter,

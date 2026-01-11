@@ -30,14 +30,16 @@ const LocalSearchBar = ({
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (search) {
-        const newUrl = formUrlQuery({
-          params: searchParams.toString(),
-          key: "q",
-          value: search,
-        });
-        router.push(newUrl, { scroll: false });
+        if (search !== query) {
+          const newUrl = formUrlQuery({
+            params: searchParams.toString(),
+            key: "q",
+            value: search,
+          });
+          router.push(newUrl, { scroll: false });
+        }
       } else {
-        if (pathname === route) {
+        if (pathname === route && query) {
           const newUrl = removeKeysFromQuery({
             params: searchParams.toString(),
             keysToRemove: ["q"],
