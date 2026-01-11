@@ -30,7 +30,7 @@ const AnswerTab = async ({ userId, clerkId, searchParams }: Props) => {
     <>
       {result.answers.map((answer) => (
         <AnswerCard
-          key={answer.question._id}
+          key={answer._id}
           clerkId={clerkId}
           _id={answer.question._id}
           answerId={answer._id}

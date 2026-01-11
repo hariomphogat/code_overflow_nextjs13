@@ -45,7 +45,7 @@ export const POST = async (request: Request) => {
 
     if (!response.ok) {
       console.error("OpenRouter API Error:", JSON.stringify(responseData, null, 2));
-      throw new Error(responseData.error?.message || `API Error: ${response.status}`);
+      throw new Error(responseData.error?.message || `API Error: ${Number(response.status)}`);
     }
 
     if (!responseData.choices || !responseData.choices[0] || !responseData.choices[0].message) {
